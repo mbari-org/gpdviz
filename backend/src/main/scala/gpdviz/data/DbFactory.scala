@@ -23,7 +23,7 @@ class DbFactory(implicit ec: ExecutionContext) extends Logging {
          |properties = {
          |  databaseName = postgres
          |  portNumber   = 5432
-         |  serverName   = localhost
+         |  serverName   = postgres
          |  user         = postgres
          |  password     = postgres
          |}
