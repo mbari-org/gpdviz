@@ -157,12 +157,6 @@ trait GpdvizServiceImpl extends GpdvizJsonImplicits with Logging {
         .replace("#sysid", sysid)
         .replace("#externalUrl", cfg.externalUrl)
         .replace(
-          "#pusher",
-          cfg.pusher
-            .map(_ => """<script src="//js.pusher.com/3.2/pusher.min.js"></script>""")
-            .getOrElse(""),
-        )
-        .replace(
           "#googleMap",
           cfg.map.googleMapApiKey
             .map(key =>

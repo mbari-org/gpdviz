@@ -30,7 +30,7 @@ class GpdvizServer extends GpdvizService {
 
   def run(keyToStop: Boolean): Unit = {
     println(
-      s"Gpdviz ${cfg.gpdviz.version} using: DB: ${db.details}  Async Notifications: ${publisher.details}",
+      s"Gpdviz ${gpdviz.BuildInfo.version} using: DB: ${db.details}  Async Notifications: ${publisher.details}",
     )
     db.createTables(ifNotExist = true)
     val bindingFuture = Http().bindAndHandle(route, cfg.httpInterface, cfg.httpPort)

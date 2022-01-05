@@ -6,12 +6,7 @@ case class GpdvizCfg(
     httpInterface: String = "0.0.0.0",
     httpPort:      Int = 5050,
     map:           MapCfg = MapCfg(),
-    pusher:        Option[PusherCfg] = None,
-) {
-  object gpdviz {
-    val version: String = "0.5.0" // from reference.conf
-  }
-}
+)
 
 case class MapCfg(
     center:          LatLonCfg = LatLonCfg(36.79, -122.02),
@@ -22,10 +17,4 @@ case class MapCfg(
 case class LatLonCfg(
     lat: Double,
     lon: Double,
-)
-
-case class PusherCfg(
-    appId:  String,
-    key:    String,
-    secret: String,
 )

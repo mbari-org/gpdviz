@@ -1,14 +1,17 @@
 import Dependencies._
 
 scalaVersion     := "2.12.8"
-version          := "0.1.0-SNAPSHOT"
+version          := "0.5.1"
 organization     := "org.mbari"
 organizationName := "mbari"
 
 lazy val root = (project in file("."))
+  .enablePlugins(BuildInfoPlugin)
   .enablePlugins(ScalaTsiPlugin)
   .settings(
     name := "gpdviz",
+    buildInfoKeys := Seq[BuildInfoKey](version),
+    buildInfoPackage := "gpdviz",
     libraryDependencies ++= Seq(
       slick,
       slickHikaricp,
