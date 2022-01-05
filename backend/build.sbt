@@ -1,14 +1,29 @@
 import Dependencies._
 
-ThisBuild / scalaVersion     := "2.13.7"
-ThisBuild / version          := "0.1.0-SNAPSHOT"
-ThisBuild / organization     := "org.mbari"
-ThisBuild / organizationName := "mbari"
+scalaVersion     := "2.12.8"
+version          := "0.1.0-SNAPSHOT"
+organization     := "org.mbari"
+organizationName := "mbari"
 
 lazy val root = (project in file("."))
   .settings(
     name := "gpdviz",
-    libraryDependencies += scalaTest % Test,
+    libraryDependencies ++= Seq(
+      slick,
+      slickHikaricp,
+      slickPg,
+      slickPgSprayJson,
+      akkaHttp,
+      akkaHttpSprayJson,
+      akkaHttpTestKit,
+      akkaHttpCors,
+      akkaHttpSwagger,
+      eriGeometry,
+      scalaLogging,
+      pprint,
+      upickle,
+      scalaTest % Test,
+    ),
 
     // The classes that you want to generate typescript interfaces for
     typescriptExports := Seq(

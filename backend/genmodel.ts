@@ -66,6 +66,7 @@ export interface ISensorSystemAdded {
   center?: ILatLon
   zoom?: number
   clickListener?: string
+  type: "SensorSystemAdded"
 }
 
 export interface ISensorSystemAdded {
@@ -75,16 +76,15 @@ export interface ISensorSystemAdded {
   center?: ILatLon
   zoom?: number
   clickListener?: string
-  type: "SensorSystemAdded"
+}
+
+export interface ISensorSystemDeleted {
+  sysid: string
 }
 
 export interface ISensorSystemDeleted {
   sysid: string
   type: "SensorSystemDeleted"
-}
-
-export interface ISensorSystemDeleted {
-  sysid: string
 }
 
 export interface ISensorSystemRefresh {
@@ -119,13 +119,13 @@ export interface IVariableDefAdded {
   sysid: string
   strid: string
   vd: IVmVariableDef
-  type: "VariableDefAdded"
 }
 
 export interface IVariableDefAdded {
   sysid: string
   strid: string
   vd: IVmVariableDef
+  type: "VariableDefAdded"
 }
 
 export interface IVariableDefSummary {
@@ -168,4 +168,4 @@ export interface IVmVariableDef {
   chartStyle?: string
 }
 
-export type Notif = (ISensorSystemDeleted | IVariableDefAdded | IObservationsAdded | ISensorSystemRefresh | ISensorSystemAdded | IDataStreamDeleted | ISensorSystemUpdated | IDataStreamAdded)
+export type Notif = (IObservationsAdded | ISensorSystemAdded | IDataStreamDeleted | IVariableDefAdded | IDataStreamAdded | ISensorSystemRefresh | ISensorSystemUpdated | ISensorSystemDeleted)
