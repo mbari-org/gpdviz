@@ -25,7 +25,7 @@ class DbFactory(implicit ec: ExecutionContext) extends Logging {
          |properties = {
          |  databaseName = gpdviz_test
          |  portNumber   = 5432
-         |  serverName   = localhost
+         |  serverName   = postgres
          |}
          |numThreads = 10
      """.stripMargin,

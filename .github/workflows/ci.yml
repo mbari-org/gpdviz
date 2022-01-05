@@ -6,6 +6,28 @@ on:
       - main
 
 jobs:
+  # Label of the container job
+  container-job:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+    # Docker Hub image that `container-job` executes in
+    container: node:10.18-jessie
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:14
+        # # Provide the password for postgres
+        # env:
+        #   POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
   test:
     runs-on: ubuntu-latest
     steps:
@@ -17,13 +39,8 @@ jobs:
           java-version: "adopt@1.8"
       - name: Coursier cache
         uses: coursier/cache-action@v5
-      - name: postgres
-        uses: CasperWA/postgresql-action@v1.2
-        with:
-          postgresql version: '14'
-          postgresql db: gpdviz_test
-          postgresql port: 5432
-      - name: Build and Test
+      - name: Create database, build, and Test
         run: |
           cd backend
+          psql -h localhost -c 'create database gpdviz_test;'
           sbt test
