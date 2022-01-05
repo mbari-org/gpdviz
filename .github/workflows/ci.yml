@@ -18,7 +18,7 @@ jobs:
       - name: Coursier cache
         uses: coursier/cache-action@v5
       - name: postgres
-      - uses: CasperWA/postgresql-action@v1.2
+        uses: CasperWA/postgresql-action@v1.2
         with:
           postgresql version: '14'
           postgresql db: gpdviz
