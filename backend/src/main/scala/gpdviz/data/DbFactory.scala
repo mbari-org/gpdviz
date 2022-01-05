@@ -23,7 +23,7 @@ class DbFactory(implicit ec: ExecutionContext) extends Logging {
         s"""
          |dataSourceClass = "org.postgresql.ds.PGSimpleDataSource"
          |properties = {
-         |  databaseName = gpdviz_test
+         |  databaseName = postgres
          |  portNumber   = 5432
          |  serverName   = postgres
          |}
