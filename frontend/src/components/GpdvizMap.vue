@@ -2,10 +2,11 @@
 import { computed, onMounted } from 'vue'
 
 import { setupLLMap } from 'src/map/llmap.js'
-import { LLMap, System } from 'components/models'
+import { LLMap } from 'components/models'
+import { ISensorSystem } from 'components/genmodel'
 
 const props = defineProps<{
-  system: System
+  system: ISensorSystem
 }>()
 
 const center = computed(() => {

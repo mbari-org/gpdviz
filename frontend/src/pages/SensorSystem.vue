@@ -3,19 +3,19 @@ import { onMounted, ref } from 'vue'
 
 import { useRoute } from 'vue-router'
 import { api } from 'boot/axios'
-import { System } from 'components/models'
+import { ISensorSystem } from 'components/genmodel'
 import SysActivity from 'components/SysActivity.vue'
 import GpdvizMap from 'components/GpdvizMap.vue'
 import Websocket from 'components/Websocket.vue'
 
 const route = useRoute()
-const system = ref<System | null>(null)
+const system = ref<ISensorSystem | null>(null)
 
 onMounted(() => {
   // (eslint has been such a pita)
   api
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    .get<System>(`ss/${route.params.sysid}`)
+    .get<ISensorSystem>(`ss/${route.params.sysid}`)
     .then((response) => {
       system.value = response.data
     })

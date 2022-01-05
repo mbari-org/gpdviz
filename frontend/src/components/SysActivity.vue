@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DataStream, System } from 'components/models'
+import { IDataStream, ISensorSystem } from 'components/genmodel'
 
 import keys from 'lodash/keys'
 import sortBy from 'lodash/sortBy'
 
 defineProps<{
-  system: System
+  system: ISensorSystem
 }>()
 
-const observationsSummary = computed(() => (ds: DataStream) => {
+const observationsSummary = computed(() => (ds: IDataStream) => {
   const isoTimes = sortBy(keys(ds.observations))
   // console.debug('lastObservation: isoTimes=', isoTimes);
   return {
