@@ -18,14 +18,14 @@ class DbFactory(implicit ec: ExecutionContext) extends Logging {
   def testDb: DbInterface = {
     val testConfig = ConfigFactory
       .parseString(
-//         |  user         = "${config.tsConfig.getString("postgres.slick.properties.user")}"
-//         |  password     = "${config.tsConfig.getString("postgres.slick.properties.password")}"
         s"""
          |dataSourceClass = "org.postgresql.ds.PGSimpleDataSource"
          |properties = {
          |  databaseName = postgres
          |  portNumber   = 5432
          |  serverName   = postgres
+         |  user         = postgres
+         |  password     = postgres
          |}
          |numThreads = 10
      """.stripMargin,
