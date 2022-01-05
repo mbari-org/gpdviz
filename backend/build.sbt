@@ -31,16 +31,7 @@ lazy val root = (project in file("."))
 
     // The classes that you want to generate typescript interfaces for
     typescriptExports := Seq(
-//      "SensorSystem",
-//      "Feature",
-//      "Geometry",
-//      "JsValue",
-      // alas, scala-tsi would hang forever dealing with the above
-
-      // trick, no use of the above, external types:
-      "TsSensorSystem",
-//      "FooWithJsValue",
-
+      "SensorSystem",
       "SensorSystemSummary",
       "DataStreamSummary",
       "VariableDefSummary",
@@ -66,9 +57,7 @@ lazy val root = (project in file("."))
     typescriptGenerationImports := Seq(
       "gpdviz.model._",
       "gpdviz._",
-      "gpdviz.model.test2ts._",
-//      "com.cloudera.science.geojson._",
-//      "com.esri.core.geometry._",
-//      "spray.json._",
+      "gpdviz.model.forts._",
+      "ForTypescript._",
     )
   )

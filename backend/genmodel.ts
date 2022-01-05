@@ -1,5 +1,16 @@
 // DO NOT EDIT: generated file by scala-tsi
 
+export interface IDataStream {
+  strid: string
+  name?: string
+  description?: string
+  mapStyle?: JsonValue
+  zOrder: number
+  chartStyle?: JsonValue
+  variables?: IVariableDef[]
+  observations?: { [ key: string ]: IObsData[] }
+}
+
 export interface IDataStreamAdded {
   sysid: string
   str: IVmDataStream
@@ -32,6 +43,12 @@ export interface ILatLon {
   lon: number
 }
 
+export interface IObsData {
+  feature?: JsonValue
+  geometry?: JsonValue
+  scalarData?: IScalarData
+}
+
 export interface IObservationsAdded {
   sysid: string
   strid: string
@@ -57,6 +74,17 @@ export interface IScalarData {
   vars: string[]
   vals: number[]
   position?: ILatLon
+}
+
+export interface ISensorSystem {
+  sysid: string
+  name?: string
+  description?: string
+  pushEvents: boolean
+  center?: ILatLon
+  zoom?: number
+  clickListener?: string
+  streams: { [ key: string ]: IDataStream }
 }
 
 export interface ISensorSystemAdded {
@@ -115,38 +143,10 @@ export interface ISensorSystemUpdated {
   sysid: string
 }
 
-export interface ITsDataStream {
-  strid: string
-  name?: string
-  description?: string
-  mapStyle?: string
-  zOrder: number
-  chartStyle?: string
-  variables?: ITsVariableDef[]
-  observations?: { [ key: string ]: ITsObsData[] }
-}
-
-export interface ITsObsData {
-  feature?: string
-  geometry?: string
-  scalarData?: IScalarData
-}
-
-export interface ITsSensorSystem {
-  sysid: string
-  name?: string
-  description?: string
-  pushEvents: boolean
-  center?: ILatLon
-  zoom?: number
-  clickListener?: string
-  streams: { [ key: string ]: ITsDataStream }
-}
-
-export interface ITsVariableDef {
+export interface IVariableDef {
   name: string
   units?: string
-  chartStyle?: string
+  chartStyle?: JsonValue
 }
 
 export interface IVariableDefAdded {
@@ -202,4 +202,6 @@ export interface IVmVariableDef {
   chartStyle?: string
 }
 
-export type Notif = (ISensorSystemRefresh | IDataStreamAdded | IDataStreamDeleted | ISensorSystemDeleted | ISensorSystemAdded | IVariableDefAdded | ISensorSystemUpdated | IObservationsAdded)
+export type JsonValue = (string | number | boolean | null | JsonValue[] | { [ member: string ]: JsonValue })
+
+export type Notif = (IDataStreamDeleted | ISensorSystemAdded | ISensorSystemDeleted | ISensorSystemUpdated | IObservationsAdded | ISensorSystemRefresh | IVariableDefAdded | IDataStreamAdded)
