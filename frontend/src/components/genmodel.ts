@@ -1,0 +1,1 @@
+../../../backend/genmodel.ts

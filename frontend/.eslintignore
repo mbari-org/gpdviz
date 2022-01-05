@@ -1,3 +1,4 @@
+src/components/genmodel.ts
 *.js
 /dist
 /src-bex/www
