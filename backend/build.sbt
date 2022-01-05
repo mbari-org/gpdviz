@@ -6,6 +6,7 @@ organization     := "org.mbari"
 organizationName := "mbari"
 
 lazy val root = (project in file("."))
+  .enablePlugins(ScalaTsiPlugin)
   .settings(
     name := "gpdviz",
     libraryDependencies ++= Seq(
@@ -27,6 +28,8 @@ lazy val root = (project in file("."))
 
     // The classes that you want to generate typescript interfaces for
     typescriptExports := Seq(
+      // "SensorSystem",  => alas, scala-tsi would hang forever dealing with this
+      // likely because of the underlying `Geometry`, `Feature` or `JsValue` types.
       "SensorSystemSummary",
       "DataStreamSummary",
       "VariableDefSummary",
