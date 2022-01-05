@@ -1,9 +1,3 @@
-export interface SysSimple {
-  sysid: string
-  name: string
-  streamIds: string[]
-}
-
 export interface System {
   sysid: string
   description?: string

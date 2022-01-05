@@ -34,6 +34,10 @@ lazy val root = (project in file("."))
 //      "JsValue",
       // alas, scala-tsi would hang forever dealing with the above
 
+      // trick, no use of the above, external types:
+      "TsSensorSystem",
+//      "FooWithJsValue",
+
       "SensorSystemSummary",
       "DataStreamSummary",
       "VariableDefSummary",
@@ -59,6 +63,7 @@ lazy val root = (project in file("."))
     typescriptGenerationImports := Seq(
       "gpdviz.model._",
       "gpdviz._",
+      "gpdviz.model.test2ts._",
 //      "com.cloudera.science.geojson._",
 //      "com.esri.core.geometry._",
 //      "spray.json._",

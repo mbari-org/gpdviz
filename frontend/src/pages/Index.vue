@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 
 import { api } from 'boot/axios'
-import { SysSimple } from 'components/models'
+import { ISensorSystemSummary } from 'components/genmodel'
 // import ExampleComponent from 'components/CompositionComponent.vue';
 
 const columns = [
@@ -17,12 +17,13 @@ const initialPagination = {
   // rowsNumber: xx if getting data from a server
 }
 
-const rows = ref<SysSimple[]>([])
+const rows = ref<ISensorSystemSummary[]>([])
 
 onMounted(() => {
   api
-    .get<SysSimple[]>('ss')
+    .get<ISensorSystemSummary[]>('ss')
     .then((response) => {
+      console.debug('ss =>', response.data)
       rows.value = response.data
     })
     .catch((e) => {

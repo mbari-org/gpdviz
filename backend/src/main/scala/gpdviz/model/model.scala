@@ -81,10 +81,6 @@ case class ObservationsSummary(
     removed: Option[Int] = None,
 )
 
-case class LatLon(lat: Double, lon: Double)
-
-case class ScalarData(vars: List[String], vals: List[Double], position: Option[LatLon] = None)
-
 case class VmSensorSystem(
     sysid:         String,
     name:          Option[String] = None,

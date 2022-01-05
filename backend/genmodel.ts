@@ -115,6 +115,40 @@ export interface ISensorSystemUpdated {
   sysid: string
 }
 
+export interface ITsDataStream {
+  strid: string
+  name?: string
+  description?: string
+  mapStyle?: string
+  zOrder: number
+  chartStyle?: string
+  variables?: ITsVariableDef[]
+  observations?: { [ key: string ]: ITsObsData[] }
+}
+
+export interface ITsObsData {
+  feature?: string
+  geometry?: string
+  scalarData?: IScalarData
+}
+
+export interface ITsSensorSystem {
+  sysid: string
+  name?: string
+  description?: string
+  pushEvents: boolean
+  center?: ILatLon
+  zoom?: number
+  clickListener?: string
+  streams: { [ key: string ]: ITsDataStream }
+}
+
+export interface ITsVariableDef {
+  name: string
+  units?: string
+  chartStyle?: string
+}
+
 export interface IVariableDefAdded {
   sysid: string
   strid: string
@@ -168,4 +202,4 @@ export interface IVmVariableDef {
   chartStyle?: string
 }
 
-export type Notif = (IObservationsAdded | ISensorSystemAdded | IDataStreamDeleted | IVariableDefAdded | IDataStreamAdded | ISensorSystemRefresh | ISensorSystemUpdated | ISensorSystemDeleted)
+export type Notif = (ISensorSystemRefresh | IDataStreamAdded | IDataStreamDeleted | ISensorSystemDeleted | ISensorSystemAdded | IVariableDefAdded | ISensorSystemUpdated | IObservationsAdded)
