@@ -22,7 +22,7 @@ jobs:
         with:
           postgresql version: '14'
           postgresql db: gpdviz
-          postgresql port: 2345
+          postgresql port: 5432
       - name: Build and Test
         run: |
           cd backend
