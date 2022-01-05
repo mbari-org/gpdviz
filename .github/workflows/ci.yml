@@ -19,6 +19,7 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgres:14
+        name: postgres
         # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: postgres
@@ -41,5 +42,5 @@ jobs:
       - name: Create database, build, and Test
         run: |
           cd backend
-          psql -h localhost -c 'create database gpdviz_test;'
+          docker exec -it postgres psql -U postgres -c 'create database gpdviz_test;'
           sbt test
