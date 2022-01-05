@@ -139,26 +139,24 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
   private def sensorSystemAction(
       sysid: String,
       streams: Seq[DataStream] = Seq.empty,
-  ): DBIOAction[Option[SensorSystem], NoStream, Effect.Read] = {
+  ): DBIOAction[Option[SensorSystem], NoStream, Effect.Read] =
     sensorSystemPgAction(sysid) map {
       case None      => None
       case Some(pss) => Some(sensorSystem2model(pss, streams))
     }
-  }
 
   private def sensorSystemAction(
       sysid: String,
-  ): DBIOAction[Option[SensorSystem], NoStream, Effect.Read] = {
+  ): DBIOAction[Option[SensorSystem], NoStream, Effect.Read] =
     for {
-      streams ← dataStreamsAction(sysid)
-      ss ← sensorSystemAction(sysid, streams)
+      streams <- dataStreamsAction(sysid)
+      ss <- sensorSystemAction(sysid, streams)
     } yield ss
-  }
 
   private def sensorSystem2model(
       pss: PgSensorSystem,
       streams: Seq[DataStream] = Seq.empty,
-  ): SensorSystem = {
+  ): SensorSystem =
     SensorSystem(
       sysid = pss.sysid,
       name = pss.name,
@@ -169,7 +167,6 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
       clickListener = pss.clickListener,
       streams = streams.map(ds => (ds.strid, ds)).toMap,
     )
-  }
 
   // //////////
 
@@ -227,9 +224,9 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
       strid: String,
   ): DBIOAction[Option[DataStream], NoStream, Effect.Read] =
     for {
-      variables ← variableDefsAction(sysid, strid)
-      observations ← observationsAction(sysid, strid)
-      ss ← dataStreamAction(sysid, strid, variables, observations)
+      variables <- variableDefsAction(sysid, strid)
+      observations <- observationsAction(sysid, strid)
+      ss <- dataStreamAction(sysid, strid, variables, observations)
     } yield ss
 
   private def dataStreamAction(
@@ -237,8 +234,8 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
       pds: PgDataStream,
   ): DBIOAction[DataStream, NoStream, Effect.Read] =
     for {
-      variables ← variableDefsAction(sysid, pds.strid)
-      observations ← observationsAction(sysid, pds.strid)
+      variables <- variableDefsAction(sysid, pds.strid)
+      observations <- observationsAction(sysid, pds.strid)
       ss = dataStream2model(pds, Some(variables.toList), Some(observations))
     } yield ss
 
@@ -299,7 +296,7 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
       strid: String,
   ): DBIOAction[Seq[VariableDef], NoStream, Effect.Read] =
     for {
-      pdss ← variableDefsPgAction(sysid, strid)
+      pdss <- variableDefsPgAction(sysid, strid)
     } yield pdss.map(variableDef2model)
 
   private def variableDef2model(pvd: PgVariableDef): VariableDef =
@@ -343,7 +340,7 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
       strid: String,
   ): DBIOAction[Map[String, List[ObsData]], NoStream, Effect.Read] =
     for {
-      obss ← observationPgAction(sysid, strid)
+      obss <- observationPgAction(sysid, strid)
     } yield observation2model(obss.toList)
 
   private def observation2model(seq: Seq[PgObservation]): Map[String, List[ObsData]] = {
@@ -398,8 +395,8 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
 
   def listSensorSystems(): Future[Seq[SensorSystemSummary]] = {
     val q = for {
-      ss ← sensorsystem
-      ds ← datastream if ds.sysid === ss.sysid
+      ss <- sensorsystem
+      ds <- datastream if ds.sysid === ss.sysid
     } yield (ss, ds)
 
     val action = q.result

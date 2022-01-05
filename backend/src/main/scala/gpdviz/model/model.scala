@@ -2,8 +2,16 @@ package gpdviz.model
 
 import com.cloudera.science.geojson.Feature
 import com.esri.core.geometry.Geometry
-import io.swagger.annotations.ApiModelProperty
 import spray.json.JsValue
+
+//object tricks {
+//  type Feature = String
+//  type Geometry = String
+//  type JsValue = String
+//}
+//import tricks._
+
+import io.swagger.annotations.ApiModelProperty
 
 import scala.annotation.meta.field
 

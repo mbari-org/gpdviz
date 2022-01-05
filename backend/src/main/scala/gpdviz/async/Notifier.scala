@@ -112,7 +112,7 @@ class Notifier(db: DbInterface, pub: Publisher)(implicit ec: ExecutionContext)
   private def ifPushing(sysid: String)(p: => Unit): Unit = {
     for {
       ssOpt <- db.getSensorSystem(sysid)
-      ss ← ssOpt
+      ss <- ssOpt
       if ss.pushEvents
     } p
   }
