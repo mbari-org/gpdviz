@@ -18,11 +18,12 @@ jobs:
       - name: Coursier cache
         uses: coursier/cache-action@v5
       - name: postgres
-        uses: harmon758/postgresql-action@v1
+      - uses: CasperWA/postgresql-action@v1.2
         with:
           postgresql version: '14'
+          postgresql db: gpdviz
+          postgresql port: 2345
       - name: Build and Test
         run: |
           cd backend
-          psql -h localhost -c 'create database gpdviz;'
           sbt test
