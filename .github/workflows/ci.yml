@@ -21,7 +21,7 @@ jobs:
         uses: CasperWA/postgresql-action@v1.2
         with:
           postgresql version: '14'
-          postgresql db: gpdviz
+          postgresql db: gpdviz_test
           postgresql port: 5432
       - name: Build and Test
         run: |
