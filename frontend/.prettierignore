@@ -1,0 +1,13 @@
+**/*.d.ts
+.quasar/
+*.scss
+*.html
+*.md
+babel.config.js
+*.js
+/dist
+/src-bex/www
+/src-capacitor
+/src-cordova
+/node_modules
+/src-ssr
