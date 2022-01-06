@@ -1,3 +1,5 @@
+![ci](https://github.com/mbari-org/gpdviz/actions/workflows/ci.yml/badge.svg)
+
 # Gpdviz
 
 Gpdviz is a generic, lightweight tool for web-based visualization
