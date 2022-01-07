@@ -6,6 +6,10 @@ import * as L from 'leaflet'
 import * as esri from 'esri-leaflet/dist/esri-leaflet'
 import * as esriVector from 'esri-leaflet-vector/dist/esri-leaflet-vector'
 import localConfig from './localConfig.js'
+import Charter from './charter.js'
+
+// TODO remove moment dependency
+import moment from 'moment'
 
 import cloneDeep from 'lodash/cloneDeep'
 import each from 'lodash/each'
@@ -308,27 +312,29 @@ function setupLLMap(
     else {
       byStrId[str.strid].absChartUsed = true;
       byStrId[str.strid].marker.on('click', function (e) {
-        const idElm = $("#" + chartId);
-        //console.debug("CLICK: idElm=", idElm, " visible=", idElm && idElm.is(":visible"));
-        idElm.stop();
-        if (idElm.is(":visible")) {
-          idElm.fadeOut(700);
-          setTimeout(charter.deactivateChart, 700);
-        }
-        else {
-          charter.activateChart();
-          idElm.fadeIn('fast');
-        }
+        // TODO handle the $ stuff
+        // const idElm = $("#" + chartId);
+        // //console.debug("CLICK: idElm=", idElm, " visible=", idElm && idElm.is(":visible"));
+        // idElm.stop();
+        // if (idElm.is(":visible")) {
+        //   idElm.fadeOut(700);
+        //   setTimeout(charter.deactivateChart, 700);
+        // }
+        // else {
+        //   charter.activateChart();
+        //   idElm.fadeIn('fast');
+        // }
       });
 
-      $(document).keyup(function (e) {
-        if (e.keyCode === 27) {
-          const idElm = $("#" + chartId);
-          //console.debug("ESC: idElm=", idElm);
-          idElm.fadeOut(700);
-          setTimeout(charter.deactivateChart, 700);
-        }
-      });
+      // TODO handle the $ stuff
+      // $(document).keyup(function (e) {
+      //   if (e.keyCode === 27) {
+      //     const idElm = $("#" + chartId);
+      //     //console.debug("ESC: idElm=", idElm);
+      //     idElm.fadeOut(700);
+      //     setTimeout(charter.deactivateChart, 700);
+      //   }
+      // });
     }
   }
 
