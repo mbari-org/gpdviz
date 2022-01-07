@@ -131,12 +131,12 @@ function setupLLMap(
   }
 
   function addMarker(strid, createMarker) {
-    var marker = createMarker();
+    let marker = createMarker();
     marker.addTo(map);
     byStrId[strid].marker = marker;
     markersLayer.addLayer(marker);
 
-    var group = overlayGroupByStreamId[strid];
+    let group = overlayGroupByStreamId[strid];
     if (!group) {
       group = new L.LayerGroup().addTo(map);
       overlayGroupByStreamId[strid] = group;
@@ -172,21 +172,16 @@ function setupLLMap(
   }
 
   function addDataStream(str) {
-    // json-ify some stuff
-    str.mapStyle   = str.mapStyle   ? JSON.parse(str.mapStyle) : {};
-    str.chartStyle = str.chartStyle ? JSON.parse(str.chartStyle) : {};
-    if (str.variables) {
-      str.variables = ldMap(str.variables, function (variable) {
-        if (variable.chartStyle) {
-          variable.chartStyle = JSON.parse(variable.chartStyle);
-        }
-        return variable;
-      });
-    }
-    //console.debug("addDataStream: str=", cloneDeep(str));
+    console.debug("addDataStream: str=", cloneDeep(str));
 
+    // REVIEW the following from previous code:
     // initialize observations to empty (stream addition not expected to include any)
-    str.observations = {};
+    // str.observations = {};
+
+    if (!str.observations) {
+      str.observations = {};
+    }
+
     byStrId[str.strid] = {
       str:      str,
       geoJsons: {}
@@ -199,16 +194,16 @@ function setupLLMap(
   }
 
   function addVariableDef(strid, vd) {
-    var str = byStrId[strid] && byStrId[strid].str;
+    const str = byStrId[strid] && byStrId[strid].str;
     if (!str) {
       console.warn("addVariableDef: unknown stream by strid=", strid);
       return;
     }
 
-    var variable = {
+    const variable = {
       name:       vd.name,
       units:      vd.units,
-      chartStyle: JSON.parse(vd.chartStyle)
+      chartStyle: vd.chartStyle
     };
 
     if (!str.variables) {
@@ -218,23 +213,24 @@ function setupLLMap(
     console.debug("addVariableDef: variable=", cloneDeep(variable));
   }
 
-  function addGeoJson(strid, timeMs, geoJsonStr) {
-    var str = byStrId[strid] && byStrId[strid].str;
+  function addGeoJson(strid, timeMs, geoJson) {
+    console.debug(`addGeoJson: strid=${strid} timeMs=${timeMs} geoJson=`, geoJson)
+    const str = byStrId[strid] && byStrId[strid].str;
     if (!str) {
       console.warn("addGeoJson: unknown stream by strid=", strid);
       return;
     }
 
-    var geoJsonKey = timeMs + "->" + geoJsonStr;
+    const geoJsonStr = JSON.stringify(geoJson)
+    const geoJsonKey = timeMs + "->" + geoJsonStr;
     if (byStrId[strid].geoJsons[geoJsonKey]) {
       console.warn("addGeoJson: already added: strid=", strid, "geoJsonKey=", geoJsonKey);
       return;
     }
 
-    var geoJson = JSON.parse(geoJsonStr);
-
+    let mapStyle
     if (geoJson.properties && geoJson.properties.style) {
-      var mapStyle = geoJson.properties.style;
+      mapStyle = geoJson.properties.style;
     }
     else {
       mapStyle = str.mapStyle ? cloneDeep(str.mapStyle) : {};
@@ -248,31 +244,31 @@ function setupLLMap(
   }
 
   function addObsScalarData(strid, timeMs, scalarData) {
-    var str = byStrId[strid] && byStrId[strid].str;
+    const str = byStrId[strid] && byStrId[strid].str;
     if (!str) {
       console.warn("addObsScalarData: unknown stream by strid=", strid);
       return;
     }
-    var charter = byStrId[strid].charter;
+    let charter = byStrId[strid].charter;
     if (!charter) {
       charter = byStrId[strid].charter = createCharter(str);
     }
 
-    var indexes = ldMap(scalarData.vars, function (varName) {
+    const indexes = ldMap(scalarData.vars, function (varName) {
       return indexOf(ldMap(str.variables, "name"), varName);
     });
     //console.debug("& indexes=", indexes);
     each(scalarData.vals, function (v, valIndex) {
-      var varIndex = indexes[valIndex];
+      const varIndex = indexes[valIndex];
       charter.addChartPoint(varIndex, timeMs, v);
     });
 
     if (!byStrId[str.strid].marker) {
       return;
     }
-    var chartId = "chart-container-" + str.strid;
+    const chartId = "chart-container-" + str.strid;
 
-    var useChartPopup = str.chartStyle && str.chartStyle.useChartPopup;
+    const useChartPopup = str.chartStyle && str.chartStyle.useChartPopup;
 
     if (useChartPopup) {
       if (byStrId[str.strid].popupInfo) return;
@@ -290,14 +286,14 @@ function setupLLMap(
     if (useChartPopup) {
       if (debug) console.debug("setting popup for stream ", str.strid);
 
-      var chartHeightStr = getSizeStr(str.chartHeightPx);
-      var minWidthPx = str.chartStyle && str.chartStyle.minWidthPx || 500;
-      var minWidthStr = minWidthPx + 'px';
+      const chartHeightStr = getSizeStr(str.chartHeightPx);
+      const minWidthPx = str.chartStyle && str.chartStyle.minWidthPx || 500;
+      const minWidthStr = minWidthPx + 'px';
 
-      var chartContainer = '<div id="' + chartId +
+      const chartContainer = '<div id="' + chartId +
         '" style="min-width:' + minWidthStr + ';height:' + chartHeightStr + ';margin:0 auto"></div>';
 
-      var popupInfo = L.popup({
+      const popupInfo = L.popup({
         //autoClose: false, closeOnClick: false
         minWidth: minWidthPx + 50
       });
@@ -312,7 +308,7 @@ function setupLLMap(
     else {
       byStrId[str.strid].absChartUsed = true;
       byStrId[str.strid].marker.on('click', function (e) {
-        var idElm = $("#" + chartId);
+        const idElm = $("#" + chartId);
         //console.debug("CLICK: idElm=", idElm, " visible=", idElm && idElm.is(":visible"));
         idElm.stop();
         if (idElm.is(":visible")) {
@@ -327,7 +323,7 @@ function setupLLMap(
 
       $(document).keyup(function (e) {
         if (e.keyCode === 27) {
-          var idElm = $("#" + chartId);
+          const idElm = $("#" + chartId);
           //console.debug("ESC: idElm=", idElm);
           idElm.fadeOut(700);
           setTimeout(charter.deactivateChart, 700);
@@ -339,7 +335,7 @@ function setupLLMap(
   function createCharter(str) {
     return Charter(str, function(point) {
       if (point && point.x) {
-        var isoTime = moment.utc(point.x).format();
+        const isoTime = moment.utc(point.x).format();
         //console.debug("hovered point=", point, isoTime);
         hoveredPoint({
           strid:   str.strid,
@@ -358,7 +354,7 @@ function setupLLMap(
       return;
     }
 
-    var newLatLon = [p[0], p[1]];
+    const newLatLon = [p[0], p[1]];
 
     if (selectionLatLon &&
       selectionLatLon[0] === newLatLon[0] &&
@@ -373,7 +369,7 @@ function setupLLMap(
 
     if (true) {
       // ad hoc for front tracking
-      var circle = L.circle(newLatLon, {
+      const circle = L.circle(newLatLon, {
         radius: 300,
         stroke: 2,
         color: "gray",
@@ -383,7 +379,7 @@ function setupLLMap(
       selectionGroup.addLayer(circle);
     }
 
-    var marker = L.marker(newLatLon, {
+    const marker = L.marker(newLatLon, {
       keyboard: false,
       icon: selectionIcon,
       riseOnHover: true,

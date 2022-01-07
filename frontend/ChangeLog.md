@@ -2,6 +2,8 @@
 
 2022-01
 
+- more llmap preps for data stream and observations.
+  Good testing with http://localhost:8080/#/tft_test
 - websocket preps
 
 2021-12

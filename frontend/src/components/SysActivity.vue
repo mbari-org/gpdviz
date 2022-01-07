@@ -36,8 +36,8 @@ const observationsSummary = computed(() => (ds: IDataStream) => {
       <div>
         <ul style="margin-left: -20px">
           <li
-            v-for="(str, str_index) in system.streams"
-            :key="str_index"
+            v-for="(str, strid) in system.streams"
+            :key="strid"
             class="q-mb-xs"
           >
             <div>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {computed, onMounted} from 'vue'
+import { computed, onMounted } from 'vue'
 
-import {setupLLMap} from 'src/map/llmap.js'
-import {LLMap} from 'components/models'
-import {ISensorSystem} from 'components/genmodel'
+import { setupLLMap } from 'src/map/llmap.js'
+import { LLMap } from 'components/models'
+import { ISensorSystem } from 'components/genmodel'
 
 const props = defineProps<{
   system: ISensorSystem
@@ -42,5 +42,5 @@ onMounted(() => {
   <pre>system={{ system }}</pre>
 </template>
 
-<style src="leaflet/dist/leaflet.css"/>
+<style src="leaflet/dist/leaflet.css" />
 <!--<style src="leaflet-measure/dist/leaflet-measure.css" />-->

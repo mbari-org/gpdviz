@@ -7,18 +7,12 @@ declare module '@vue/runtime-core' {
   }
 }
 
-// const baseName = 'tsauv.shore.mbari.org/gpdviz'
-const baseName = 'localhost:5050'
+const baseName = 'tsauv.shore.mbari.org/gpdviz'
+// const baseName = 'localhost:5050'
 
 const baseURL = `http://${baseName}/api`
 const wsBaseUri = `ws://${baseName}/ws`
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
 const api = axios.create({
   baseURL,
 })
