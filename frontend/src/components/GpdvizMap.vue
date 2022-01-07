@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import {computed, onMounted} from 'vue'
 
-import { setupLLMap } from 'src/map/llmap.js'
-import { LLMap } from 'components/models'
-import { ISensorSystem } from 'components/genmodel'
+import {setupLLMap} from 'src/map/llmap.js'
+import {LLMap} from 'components/models'
+import {ISensorSystem} from 'components/genmodel'
 
 const props = defineProps<{
   system: ISensorSystem
+}>()
+
+const emit = defineEmits<{
+  (e: 'gotLLMap', llmap: LLMap): void
 }>()
 
 const center = computed(() => {
@@ -18,18 +22,15 @@ const center = computed(() => {
 
 let llmap: LLMap | null = null
 
-const prepareSystem = (llmap: LLMap, center: number[], zoom: number) => {
-  llmap.sensorSystemAdded(center, zoom)
-}
-
 onMounted(() => {
   const zoom = 10
   llmap = setupLLMap('mapid', center.value, zoom)
 
   if (llmap && center.value) {
-    prepareSystem(llmap, center.value, zoom)
     llmap.sensorSystemAdded(center.value, zoom)
   }
+
+  emit('gotLLMap', llmap)
 })
 </script>
 
@@ -41,5 +42,5 @@ onMounted(() => {
   <pre>system={{ system }}</pre>
 </template>
 
-<style src="leaflet/dist/leaflet.css" />
+<style src="leaflet/dist/leaflet.css"/>
 <!--<style src="leaflet-measure/dist/leaflet-measure.css" />-->

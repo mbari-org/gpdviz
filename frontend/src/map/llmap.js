@@ -1,11 +1,16 @@
 const debug = window.location.search.match(/.*debug=.*\bmap\b.*/)
 
-export { setupLLMap }
+export {setupLLMap}
 
 import * as L from 'leaflet'
 import * as esri from 'esri-leaflet/dist/esri-leaflet'
 import * as esriVector from 'esri-leaflet-vector/dist/esri-leaflet-vector'
 import localConfig from './localConfig.js'
+
+import cloneDeep from 'lodash/cloneDeep'
+import each from 'lodash/each'
+import indexOf from 'lodash/indexOf'
+import ldMap from 'lodash/map'
 
 console.debug('localConfig=', localConfig)
 
@@ -53,7 +58,7 @@ function setupLLMap(
     }
   )
 
-  const empty = L.tileLayer('', { opacity: 0 })
+  const empty = L.tileLayer('', {opacity: 0})
 
   const baseLayers = {
     'ArcGIS:Streets': esriStreets,
@@ -76,45 +81,345 @@ function setupLLMap(
     // }
   )
 
-  if (map) {
-    map.setView(center, zoom)
-  }
-
-  const circle = L.circle([36.82, -122.0], {
-    color: 'red',
-    fillColor: '#f03',
-    fillOpacity: 0.5,
-    radius: 500,
-  }).addTo(map)
-
   // esriImagery.addTo(map);
   esriOceansLayer.addTo(map)
 
   // esriStreets.addTo(map);
 
+  if (map) {
+    map.setView(center, zoom)
+  }
+
+  const markersLayer = new L.LayerGroup();
+  const markersLayerMG = new L.LayerGroup();
+  markersLayer.addTo(map);
+
+  const controlLayers = L.control.layers(baseLayers).addTo(map)
+
+  let overlayGroupByStreamId = {}
+
+  const selectionGroup = new L.LayerGroup().addTo(map)
+  let selectionLatLon = null
+
+  // TODO setMagnifyingGlass
+  // TODO setMeasure
+
+  const selectionIcon = new L.Icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  })
+
+  // TODO popupEvents
+
+  function markerCreator(geojson, mapStyle) {
+    //console.debug(":::::: geojson=", geojson);
+    return function() {
+      return L.geoJSON(geojson, {
+        style: mapStyle,
+        pointToLayer: function (feature, latlng) {
+          if (!mapStyle.radius) {
+            mapStyle.radius = 5;
+          }
+          return L.circleMarker(latlng, mapStyle);
+        }
+      });
+    }
+  }
+
+  function addMarker(strid, createMarker) {
+    var marker = createMarker();
+    marker.addTo(map);
+    byStrId[strid].marker = marker;
+    markersLayer.addLayer(marker);
+
+    var group = overlayGroupByStreamId[strid];
+    if (!group) {
+      group = new L.LayerGroup().addTo(map);
+      overlayGroupByStreamId[strid] = group;
+      controlLayers.addOverlay(group, strid);
+    }
+    group.addLayer(marker);
+
+    marker = createMarker();
+    markersLayerMG.addLayer(marker);
+  }
+
+  function clearMarkers() {
+    selectionGroup.clearLayers();
+    selectionLatLon = null;
+
+    markersLayer.clearLayers();
+    markersLayerMG.clearLayers();
+    each(overlayGroupByStreamId, function(group) {
+      controlLayers.removeLayer(group);
+      map.removeLayer(group);
+    });
+    overlayGroupByStreamId = {};
+  }
+
   function sensorSystemAdded(center, zoom) {
     console.debug('sensorSystemAdded: center=', center)
-    // clearMarkers();
+    clearMarkers();
     setView(center, zoom)
+  }
+
+  function sensorSystemDeleted() {
+    clearMarkers();
+  }
+
+  function addDataStream(str) {
+    // json-ify some stuff
+    str.mapStyle   = str.mapStyle   ? JSON.parse(str.mapStyle) : {};
+    str.chartStyle = str.chartStyle ? JSON.parse(str.chartStyle) : {};
+    if (str.variables) {
+      str.variables = ldMap(str.variables, function (variable) {
+        if (variable.chartStyle) {
+          variable.chartStyle = JSON.parse(variable.chartStyle);
+        }
+        return variable;
+      });
+    }
+    //console.debug("addDataStream: str=", cloneDeep(str));
+
+    // initialize observations to empty (stream addition not expected to include any)
+    str.observations = {};
+    byStrId[str.strid] = {
+      str:      str,
+      geoJsons: {}
+    };
+  }
+
+  // TODO
+  function deleteDataStream(strid) {
+    console.debug("TODO deleteDataStream: strid=", strid)
+  }
+
+  function addVariableDef(strid, vd) {
+    var str = byStrId[strid] && byStrId[strid].str;
+    if (!str) {
+      console.warn("addVariableDef: unknown stream by strid=", strid);
+      return;
+    }
+
+    var variable = {
+      name:       vd.name,
+      units:      vd.units,
+      chartStyle: JSON.parse(vd.chartStyle)
+    };
+
+    if (!str.variables) {
+      str.variables = [];
+    }
+    str.variables.push(variable);
+    console.debug("addVariableDef: variable=", cloneDeep(variable));
+  }
+
+  function addGeoJson(strid, timeMs, geoJsonStr) {
+    var str = byStrId[strid] && byStrId[strid].str;
+    if (!str) {
+      console.warn("addGeoJson: unknown stream by strid=", strid);
+      return;
+    }
+
+    var geoJsonKey = timeMs + "->" + geoJsonStr;
+    if (byStrId[strid].geoJsons[geoJsonKey]) {
+      console.warn("addGeoJson: already added: strid=", strid, "geoJsonKey=", geoJsonKey);
+      return;
+    }
+
+    var geoJson = JSON.parse(geoJsonStr);
+
+    if (geoJson.properties && geoJson.properties.style) {
+      var mapStyle = geoJson.properties.style;
+    }
+    else {
+      mapStyle = str.mapStyle ? cloneDeep(str.mapStyle) : {};
+    }
+
+    //console.debug("addGeoJson: timeMs=", timeMs, "geoJson=", geoJson, "mapStyle=", mapStyle);
+
+    byStrId[strid].geoJsons[geoJsonKey] = geoJson;
+
+    addMarker(strid, markerCreator(geoJson, mapStyle));
+  }
+
+  function addObsScalarData(strid, timeMs, scalarData) {
+    var str = byStrId[strid] && byStrId[strid].str;
+    if (!str) {
+      console.warn("addObsScalarData: unknown stream by strid=", strid);
+      return;
+    }
+    var charter = byStrId[strid].charter;
+    if (!charter) {
+      charter = byStrId[strid].charter = createCharter(str);
+    }
+
+    var indexes = ldMap(scalarData.vars, function (varName) {
+      return indexOf(ldMap(str.variables, "name"), varName);
+    });
+    //console.debug("& indexes=", indexes);
+    each(scalarData.vals, function (v, valIndex) {
+      var varIndex = indexes[valIndex];
+      charter.addChartPoint(varIndex, timeMs, v);
+    });
+
+    if (!byStrId[str.strid].marker) {
+      return;
+    }
+    var chartId = "chart-container-" + str.strid;
+
+    var useChartPopup = str.chartStyle && str.chartStyle.useChartPopup;
+
+    if (useChartPopup) {
+      if (byStrId[str.strid].popupInfo) return;
+    }
+    else if (byStrId[str.strid].absChartUsed) return;
+
+    if (str.chartHeightPx === undefined) {
+      str.chartHeightPx = 370;
+      if (str.chartStyle && str.chartStyle.height) {
+        str.chartHeightPx = str.chartStyle.height;
+      }
+      //console.debug(str.strid, "str.chartHeightPx=", str.chartHeightPx);
+    }
+
+    if (useChartPopup) {
+      if (debug) console.debug("setting popup for stream ", str.strid);
+
+      var chartHeightStr = getSizeStr(str.chartHeightPx);
+      var minWidthPx = str.chartStyle && str.chartStyle.minWidthPx || 500;
+      var minWidthStr = minWidthPx + 'px';
+
+      var chartContainer = '<div id="' + chartId +
+        '" style="min-width:' + minWidthStr + ';height:' + chartHeightStr + ';margin:0 auto"></div>';
+
+      var popupInfo = L.popup({
+        //autoClose: false, closeOnClick: false
+        minWidth: minWidthPx + 50
+      });
+      popupInfo._strid = str.strid;
+
+      popupInfo.setContent(chartContainer);
+
+      byStrId[str.strid].marker.bindPopup(popupInfo);
+      byStrId[str.strid].popupInfo = popupInfo;
+    }
+
+    else {
+      byStrId[str.strid].absChartUsed = true;
+      byStrId[str.strid].marker.on('click', function (e) {
+        var idElm = $("#" + chartId);
+        //console.debug("CLICK: idElm=", idElm, " visible=", idElm && idElm.is(":visible"));
+        idElm.stop();
+        if (idElm.is(":visible")) {
+          idElm.fadeOut(700);
+          setTimeout(charter.deactivateChart, 700);
+        }
+        else {
+          charter.activateChart();
+          idElm.fadeIn('fast');
+        }
+      });
+
+      $(document).keyup(function (e) {
+        if (e.keyCode === 27) {
+          var idElm = $("#" + chartId);
+          //console.debug("ESC: idElm=", idElm);
+          idElm.fadeOut(700);
+          setTimeout(charter.deactivateChart, 700);
+        }
+      });
+    }
+  }
+
+  function createCharter(str) {
+    return Charter(str, function(point) {
+      if (point && point.x) {
+        var isoTime = moment.utc(point.x).format();
+        //console.debug("hovered point=", point, isoTime);
+        hoveredPoint({
+          strid:   str.strid,
+          x:       point.x,
+          y:       point.y,
+          isoTime: isoTime
+        });
+      }
+    }, mouseOutside);
+  }
+
+  function addSelectionPoint(p) {
+    if (!p) {
+      selectionGroup.clearLayers();
+      selectionLatLon = null;
+      return;
+    }
+
+    var newLatLon = [p[0], p[1]];
+
+    if (selectionLatLon &&
+      selectionLatLon[0] === newLatLon[0] &&
+      selectionLatLon[0] === newLatLon[0]) {
+      return;
+    }
+
+    selectionGroup.clearLayers();
+    selectionLatLon = newLatLon;
+
+    // console.debug("addSelectionPoint: p=", p);
+
+    if (true) {
+      // ad hoc for front tracking
+      var circle = L.circle(newLatLon, {
+        radius: 300,
+        stroke: 2,
+        color: "gray",
+        weight: 1,
+        fillOpacity: 0.1
+      }).addTo(map);
+      selectionGroup.addLayer(circle);
+    }
+
+    var marker = L.marker(newLatLon, {
+      keyboard: false,
+      icon: selectionIcon,
+      riseOnHover: true,
+      opacity: 0.9
+    }).addTo(map);
+    selectionGroup.addLayer(marker);
   }
 
   function setView(center, zoom) {
     map.setView([center[0], center[1]], zoom)
   }
 
+  function setZoom(zoom) {
+    map.setZoom(zoom);
+  }
+
   prepareAdjustMapUponWindowResize(mapid, map)
+
+
+
 
   return {
     sensorSystemAdded,
-    // sensorSystemDeleted,
-    // addDataStream,
-    // deleteDataStream,
-    // addVariableDef,
-    // addGeoJson,
-    // addObsScalarData,
-    // addSelectionPoint,
+    sensorSystemDeleted,
+    addDataStream,
+    deleteDataStream,
+    addVariableDef,
+    addGeoJson,
+    addObsScalarData,
+    addSelectionPoint,
     setView,
   }
+}
+
+function getSizeStr(size) {
+  return typeof size === 'number' ? size + 'px' : size;
 }
 
 function prepareAdjustMapUponWindowResize(mapid, map) {
@@ -152,7 +457,7 @@ function prepareAdjustMapUponWindowResize(mapid, map) {
       mapContainer.style.setProperty('height', `${windowHeight}px`)
     }
     L.Util.requestAnimFrame(function () {
-      map.invalidateSize({ debounceMoveend: true })
+      map.invalidateSize({debounceMoveend: true})
     }, map)
   }
 

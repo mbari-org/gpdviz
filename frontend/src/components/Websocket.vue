@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { wsBaseUri } from 'boot/axios'
+import { Notif } from 'components/genmodel'
 import { computed, ref } from 'vue'
 import Timeout = NodeJS.Timeout
 
 const props = defineProps<{
   sysid: string
+  handleNotification(notif: Notif): void
 }>()
 
 const label = ref<string>('Connect')
@@ -45,7 +47,9 @@ function clicked() {
   ws.onmessage = (event: MessageEvent) => {
     console.debug('onmessage: event=', event)
     // const notif = upickle.default.read[Notif](event.data.toString)
-    // handleNotification(notif)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const notif = event.data // TODO see how goes
+    props.handleNotification(notif)
   }
   ws.onclose = () => {
     closed()
