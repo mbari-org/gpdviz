@@ -2,6 +2,8 @@ import each from 'lodash/each'
 import sortBy from 'lodash/sortBy'
 import throttle from 'lodash/throttle'
 
+import Highcharts from 'highcharts/highstock'
+
 export default function Charter(str, hoveredPoint, mouseOutside) {
   var strid = str.strid;
   var variables = str.variables;
@@ -156,7 +158,7 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
   }
 
   function createChart() {
-    //console.debug(str.strid, "createChart: str.chartHeightPx=", str.chartHeightPx);
+    console.warn(str.strid, "createChart: str.chartHeightPx=", str.chartHeightPx);
     // http://stackoverflow.com/q/23624448/830737
     return new Highcharts.StockChart({
       chart: {

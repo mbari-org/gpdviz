@@ -24,7 +24,24 @@ let llmap: LLMap | null = null
 
 onMounted(() => {
   const zoom = 10
-  llmap = setupLLMap('mapid', center.value, zoom)
+
+  // TODO
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const hoveredPoint = () => {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const clickHandler = () => {}
+  const includeGoogleMap = false
+  const mouseOutside = () => llmap?.addSelectionPoint()
+
+  llmap = setupLLMap(
+    'mapid',
+    center.value,
+    zoom,
+    hoveredPoint,
+    mouseOutside,
+    clickHandler,
+    includeGoogleMap
+  )
 
   if (llmap && center.value) {
     llmap.sensorSystemAdded(center.value, zoom)

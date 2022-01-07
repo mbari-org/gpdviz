@@ -2,7 +2,7 @@
 
 2022-01
 
-- preparing chart handling.
+- initial chart display.
   Testing with http://localhost:8080/#/ss1
 - more llmap preps for data stream and observations.
   Good testing with http://localhost:8080/#/tft_test

@@ -10,4 +10,6 @@ export interface LLMap {
   addGeoJson(strid: string, timeMs: number, geoJson: JsonValue): void
 
   addObsScalarData(strid: string, timeMs: number, scalarData: IScalarData): void
+
+  addSelectionPoint(p?: number[]): void
 }

@@ -117,7 +117,54 @@ function setupLLMap(
     shadowSize: [41, 41]
   })
 
-  // TODO popupEvents
+  // popupEvents:
+  {
+    map.on('popupopen', function(e) {
+      const strid = e.popup && e.popup._strid;
+      const str = strid && byStrId[strid].str;
+      const charter = str && byStrId[strid].charter;
+      console.warn("popupopen: str=", str, "has-charter=", !!charter);
+      if (charter) {
+        charter.activateChart();
+      }
+    });
+    map.on('popupclose', function(e) {
+      const strid = e.popup && e.popup._strid;
+      const str = strid && byStrId[strid].str;
+      //console.debug("popupclose: str=", str);
+      if (str && byStrId[strid].charter) {
+        const charter = byStrId[str.strid].charter;
+        //console.debug("popupclose: charter=", charter);
+        charter.deactivateChart();
+      }
+      setTimeout(function() {
+        //vm.hoveredPoint = {};
+        addSelectionPoint();
+      });
+    });
+
+    map.on('click', function (e) {
+      const shiftKey = e.originalEvent.shiftKey;
+      const altKey   = e.originalEvent.altKey;
+      const metaKey  = e.originalEvent.metaKey;
+
+      if (debug) console.debug("MAP CLICK: e=", e
+        ,"latlng=",   e.latlng
+        ,"shiftKey=", shiftKey
+        ,"altKey=",   altKey
+        ,"metaKey=",  metaKey
+      );
+
+      // TODO handle clickHandler
+      // clickHandler({
+      //   lat:       e.latlng.lat,
+      //   lon:       e.latlng.lng,
+      //   shiftKey:  shiftKey,
+      //   altKey:    altKey,
+      //   metaKey:   metaKey
+      // });
+    });
+  }
 
   function markerCreator(geojson, mapStyle) {
     //console.debug(":::::: geojson=", geojson);
@@ -288,7 +335,8 @@ function setupLLMap(
     }
 
     if (useChartPopup) {
-      if (debug) console.debug("setting popup for stream ", str.strid);
+      console.warn("setting popup for stream ", str.strid);
+      console.warn(`setting popup chartId=${chartId}`);
 
       const chartHeightStr = getSizeStr(str.chartHeightPx);
       const minWidthPx = str.chartStyle && str.chartStyle.minWidthPx || 500;
