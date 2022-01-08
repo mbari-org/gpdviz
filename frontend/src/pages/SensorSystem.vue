@@ -44,7 +44,7 @@ onMounted(() => {
   api
     .get<ISensorSystem>(url)
     .then((response) => {
-      console.debug('Got:', JSON.stringify(response.data, null, '   '))
+      // console.debug('Got:', JSON.stringify(response.data, null, '   '))
       // console.debug('Got:', response.data)
       system.value = response.data
     })

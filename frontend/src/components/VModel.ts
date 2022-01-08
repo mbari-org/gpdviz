@@ -9,6 +9,9 @@ import {
 // import {Ref, ref} from 'vue'
 
 import each from 'lodash/each'
+import keys from 'lodash/keys'
+import cloneDeep from 'lodash/cloneDeep'
+import sortBy from 'lodash/sortBy'
 
 const debug = /.*debug=.*\bdebug\b.*/.exec(window.location.search)
 
@@ -65,21 +68,26 @@ export class VModel {
   }
 
   addStreamToMap(str: IDataStream) {
-    // if (str.strid === 'boundary_polygon') {
-    console.debug('addStreamToMap: str=', str)
+    // TODO remove selective logging
+    if (str.strid === 'boundary_polygon')
+    console.debug('addStreamToMap: str=', cloneDeep(str))
     this.llmap.addDataStream(str)
-    // }
   }
 
   addObservationsToMap(
     str: IDataStream,
     obsMap: { [key: string]: IObsData[] }
   ) {
-    console.debug('addObservationsToMap: str=', str, 'obsMap=', obsMap)
+    // TODO remove selective logging
+    if (str.strid === 'boundary_polygon')
+    console.debug('addObservationsToMap:', 'obsMap=', cloneDeep(obsMap))
 
-    each(obsMap, (obss, timeIso) => {
+    const sortedTimeIsos = sortBy(keys(obsMap))
+
+    each(sortedTimeIsos, timeIso => {
+      const obss = obsMap[timeIso]
       const timeMs = new Date(timeIso).getTime()
-      each(obss, (obs) => {
+      each(obss, obs => {
         if (obs.feature) {
           this.llmap.addGeoJson(str.strid, timeMs, obs.feature)
         }
@@ -87,6 +95,8 @@ export class VModel {
           this.llmap.addGeoJson(str.strid, timeMs, obs.geometry)
         }
         if (obs.scalarData) {
+          // if (str.strid === 'boundary_polygon')
+          //   console.debug('call addObsScalarData:', cloneDeep(obs.scalarData))
           this.llmap.addObsScalarData(str.strid, timeMs, obs.scalarData)
 
           // TODO

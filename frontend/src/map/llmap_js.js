@@ -158,14 +158,13 @@ function setupLLMap(
         ,"metaKey=",  metaKey
       );
 
-      // TODO handle clickHandler
-      // clickHandler({
-      //   lat:       e.latlng.lat,
-      //   lon:       e.latlng.lng,
-      //   shiftKey:  shiftKey,
-      //   altKey:    altKey,
-      //   metaKey:   metaKey
-      // });
+      clickHandler({
+        lat:       e.latlng.lat,
+        lon:       e.latlng.lng,
+        shiftKey:  shiftKey,
+        altKey:    altKey,
+        metaKey:   metaKey
+      });
     });
   }
 
@@ -226,7 +225,7 @@ function setupLLMap(
   }
 
   function addDataStream(str) {
-    console.debug("addDataStream: str=", cloneDeep(str));
+    // console.debug("addDataStream: str=", cloneDeep(str));
 
     // REVIEW the following from previous code:
     // initialize observations to empty (stream addition not expected to include any)
@@ -268,7 +267,7 @@ function setupLLMap(
   }
 
   function addGeoJson(strid, timeMs, geoJson) {
-    console.debug(`addGeoJson: strid=${strid} timeMs=${timeMs} geoJson=`, geoJson)
+    // console.debug(`addGeoJson: strid=${strid} timeMs=${timeMs} geoJson=`, geoJson)
     const str = byStrId[strid] && byStrId[strid].str;
     if (!str) {
       console.warn("addGeoJson: unknown stream by strid=", strid);
@@ -305,6 +304,7 @@ function setupLLMap(
     }
     let charter = byStrId[strid].charter;
     if (!charter) {
+      console.log("addObsScalarData: creating charter for strid=", strid);
       charter = byStrId[strid].charter = createCharter(str);
     }
 
@@ -317,12 +317,15 @@ function setupLLMap(
       charter.addChartPoint(varIndex, timeMs, v);
     });
 
-    if (!byStrId[str.strid].marker) {
+    if (!byStrId[strid].marker) {
+      console.warn("addObsScalarData: not marker for strid=", strid);
       return;
     }
     const chartId = "chart-container-" + str.strid;
 
-    const useChartPopup = str.chartStyle && str.chartStyle.useChartPopup;
+    // TODO review flags for this
+    const useChartPopup = !!str.chartStyle
+    // const useChartPopup = str.chartStyle && str.chartStyle.useChartPopup;
 
     if (useChartPopup) {
       if (byStrId[str.strid].popupInfo) return;
@@ -363,9 +366,10 @@ function setupLLMap(
     else {
       byStrId[str.strid].absChartUsed = true;
       byStrId[str.strid].marker.on('click', function (e) {
+
+        const idElm = document.getElementById(chartId)
+        console.debug("CLICK: idElm=", idElm, " visible=", idElm && idElm.is(":visible"));
         // TODO handle the $ stuff
-        // const idElm = $("#" + chartId);
-        // //console.debug("CLICK: idElm=", idElm, " visible=", idElm && idElm.is(":visible"));
         // idElm.stop();
         // if (idElm.is(":visible")) {
         //   idElm.fadeOut(700);
