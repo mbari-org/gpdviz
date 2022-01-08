@@ -1,7 +1,7 @@
 import { IDataStream, IScalarData, JsonValue } from 'components/genmodel'
-import { setupLLMap } from 'src/map/llmap'
+import { setupLLMap } from 'src/map/llmap_js'
 
-// convenience while llmap.js is morphed into TS under the LLMap class below.
+// convenience while llmap_js.js is morphed into TS under the LLMap class below.
 interface ILLMap {
   sensorSystemAdded(center: number[], zoom: number): void
 

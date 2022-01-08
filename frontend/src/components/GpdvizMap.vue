@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
-import { LLMap } from 'src/map/models'
+import { LLMap } from 'src/map/LLMap'
 import { ISensorSystem } from 'components/genmodel'
 
 const props = defineProps<{

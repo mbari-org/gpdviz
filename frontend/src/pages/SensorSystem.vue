@@ -7,7 +7,7 @@ import { ISensorSystem, Notif } from 'components/genmodel'
 import SysActivity from 'components/SysActivity.vue'
 import GpdvizMap from 'components/GpdvizMap.vue'
 import Websocket from 'components/Websocket.vue'
-import { LLMap } from 'src/map/models'
+import { LLMap } from 'src/map/LLMap'
 import { VModel } from 'components/VModel'
 
 const route = useRoute()
