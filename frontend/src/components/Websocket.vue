@@ -9,21 +9,25 @@ const props = defineProps<{
   handleNotification(notif: Notif): void
 }>()
 
-const label = ref<string>('Connect')
 const connecting = ref<boolean>(false)
 
 const wsOpt = ref<WebSocket | null>(null)
 
 let keepAliveHandleOpt: Timeout | null = null
 
+const connected = computed(() => !!wsOpt.value)
+
+const label = computed(() =>
+  connected.value ? 'Connected' : connecting.value ? 'Connecting' : 'Connect'
+)
+
 const btnClass = computed(() =>
-  wsOpt.value ? 'ws-connected' : 'ws-disconnected'
+  connected.value ? 'ws-connected' : 'ws-disconnected'
 )
 
 function clicked() {
   console.debug('Clicked')
   connecting.value = true
-  label.value = 'connecting...'
 
   const uri = `${wsBaseUri}/${props.sysid}`
   console.debug(`uri: ${uri}`)
@@ -38,7 +42,6 @@ function clicked() {
       }
     }, 40 * 1000)
     connecting.value = false
-    label.value = 'Connected'
   }
   ws.onerror = (event: Event) => {
     console.error('onerror: event=', event)
@@ -58,7 +61,6 @@ function clicked() {
 
 function closed() {
   wsOpt.value = null
-  label.value = 'Connect'
   if (keepAliveHandleOpt) {
     clearInterval(keepAliveHandleOpt)
   }
@@ -71,7 +73,7 @@ function closed() {
 <template>
   <q-btn
     :label="label"
-    :disable="connecting"
+    :disable="connecting || connected"
     :class="btnClass"
     no-caps
     dense
