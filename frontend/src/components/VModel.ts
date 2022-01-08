@@ -1,4 +1,4 @@
-import { LLMap } from 'components/models'
+import { LLMap } from 'src/map/models'
 import {
   ISensorSystem,
   IDataStream,

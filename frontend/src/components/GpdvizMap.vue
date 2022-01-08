@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 
-import { setupLLMap } from 'src/map/llmap.js'
-import { LLMap } from 'components/models'
+import { LLMap } from 'src/map/models'
 import { ISensorSystem } from 'components/genmodel'
 
 const props = defineProps<{
@@ -25,23 +24,7 @@ let llmap: LLMap | null = null
 onMounted(() => {
   const zoom = 10
 
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const hoveredPoint = () => {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const clickHandler = () => {}
-  const includeGoogleMap = false
-  const mouseOutside = () => llmap?.addSelectionPoint()
-
-  llmap = setupLLMap(
-    'mapid',
-    center.value,
-    zoom,
-    hoveredPoint,
-    mouseOutside,
-    clickHandler,
-    includeGoogleMap
-  )
+  llmap = new LLMap(center.value, zoom)
 
   if (llmap && center.value) {
     llmap.sensorSystemAdded(center.value, zoom)
