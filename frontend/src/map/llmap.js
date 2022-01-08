@@ -44,13 +44,17 @@ function setupLLMap(
 
   const esriOceansLayer = esri.basemapLayer('Oceans')
 
-  const esriImagery = esriVector.vectorBasemapLayer('ArcGIS:ArcGIS:Imagery', {
+  const esriImagery = esriVector.vectorBasemapLayer('ArcGIS:Imagery', {
     apikey: localConfig.esriApikey,
   })
 
-  const esriStreets = esriVector.vectorBasemapLayer('ArcGIS:Streets', {
-    apikey: localConfig.esriApikey,
-  })
+  // these work, but not really needed:
+  // const esriStreets = esriVector.vectorBasemapLayer('ArcGIS:Streets', {
+  //   apikey: localConfig.esriApikey,
+  // })
+  // const esriNavigation = esriVector.vectorBasemapLayer('ArcGIS:Navigation', {
+  //   apikey: localConfig.esriApikey,
+  // })
 
   // as seen in https://ihcantabria.github.io/Leaflet.CanvasLayer.Field/example_ScalarField_Geotiff_WCS.html
   const dark = L.tileLayer(
@@ -65,11 +69,13 @@ function setupLLMap(
   const empty = L.tileLayer('', {opacity: 0})
 
   const baseLayers = {
-    'ArcGIS:Streets': esriStreets,
-    'Dark Layer (CARTO)': dark,
-    'Empty': empty,
-    'OpenStreetMap': osmLayer,
     'ESRI Oceans': esriOceansLayer,
+    'ArcGIS:Imagery': esriImagery,
+    // 'ArcGIS:Streets': esriStreets,
+    // 'ArcGIS:Navigation': esriNavigation,
+    'Dark Layer (CARTO)': dark,
+    'OpenStreetMap': osmLayer,
+    'Empty': empty,
   }
   if (includeGoogleMap) {
     baseLayers['Google satellite'] = L.gridLayer.googleMutant({
@@ -85,10 +91,7 @@ function setupLLMap(
     // }
   )
 
-  // esriImagery.addTo(map);
   esriOceansLayer.addTo(map)
-
-  // esriStreets.addTo(map);
 
   if (map) {
     map.setView(center, zoom)
