@@ -41,7 +41,13 @@ const observationsSummary = computed(() => (ds: IDataStream) => {
       <ul style="margin-left: -20px">
         <li v-for="str in sortedStreams" :key="str.strid" class="q-mb-xs">
           <div>
-            <span class="text-bold">{{ str.strid }}</span>
+            <span class="text-bold">
+              {{ str.strid }}
+              <q-tooltip v-if="str.mapStyle || str.chartStyle">
+                <pre v-if="str.mapStyle">mapStyle = {{ str.mapStyle }}</pre>
+                <pre v-if="str.chartStyle">chartStyle = {{ str.chartStyle }}</pre>
+              </q-tooltip>
+            </span>
             <ul v-if="str.variables">
               <li v-for="(v, v_index) in str.variables" :key="v_index">
                 {{ v.name }}
