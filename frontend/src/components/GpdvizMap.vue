@@ -14,9 +14,7 @@ const emit = defineEmits<{
 
 const center = computed(() => {
   const c = props.system.center
-  if (c) {
-    return [c.lat, c.lon]
-  } else return null
+  return c ? [c.lat, c.lon] : [36.82000, -122.00000]
 })
 
 let llmap: LLMap | null = null
@@ -26,9 +24,7 @@ onMounted(() => {
 
   llmap = new LLMap(center.value, zoom)
 
-  if (llmap && center.value) {
-    llmap.sensorSystemAdded(center.value, zoom)
-  }
+  llmap.sensorSystemAdded(center.value, zoom)
 
   emit('gotLLMap', llmap)
 })
