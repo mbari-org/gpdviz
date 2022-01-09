@@ -1,5 +1,6 @@
 import { IDataStream, IScalarData, JsonValue } from 'components/genmodel'
 import { setupLLMap } from 'src/map/llmap_js'
+import { positionsByTime } from 'src/map/PositionsByTime'
 
 // convenience while llmap_js.js is morphed into TS under the LLMap class below.
 interface ILLMap {
@@ -21,9 +22,23 @@ export class LLMap {
   _llmap: ILLMap
 
   constructor(center: number[], zoom: number) {
+    const hoveredPoint = (p?: { [key: string]: unknown }) => {
+      if (p) {
+        const strid = p['strid'] as string
+        const x = p['x'] as number
+        //val y = p("y").asInstanceOf[Double].toLong
+        //val isoTime = p("isoTime").asInstanceOf[String]
+        //console.log("hoveredPoint: p=" + p + " x=" +x+ " strid=" + strid)
+
+        const latLon = positionsByTime.get(strid, x)
+        console.debug('PRIOR addSelectionPoint: latLon=', latLon)
+        if (latLon) {
+          this._llmap.addSelectionPoint([latLon.lat, latLon.lon])
+        }
+      }
+    }
+
     // TODO
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const hoveredPoint = () => {}
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const clickHandler = () => {}
     const includeGoogleMap = false

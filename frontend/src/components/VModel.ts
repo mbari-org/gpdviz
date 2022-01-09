@@ -6,6 +6,9 @@ import {
   Notif,
   JsonValue,
 } from 'components/genmodel'
+
+import { positionsByTime } from 'src/map/PositionsByTime'
+
 // import {Ref, ref} from 'vue'
 
 import each from 'lodash/each'
@@ -70,7 +73,7 @@ export class VModel {
   addStreamToMap(str: IDataStream) {
     // TODO remove selective logging
     if (str.strid === 'boundary_polygon')
-    console.debug('addStreamToMap: str=', cloneDeep(str))
+      console.debug('addStreamToMap: str=', cloneDeep(str))
     this.llmap.addDataStream(str)
   }
 
@@ -80,14 +83,14 @@ export class VModel {
   ) {
     // TODO remove selective logging
     if (str.strid === 'boundary_polygon')
-    console.debug('addObservationsToMap:', 'obsMap=', cloneDeep(obsMap))
+      console.debug('addObservationsToMap:', 'obsMap=', cloneDeep(obsMap))
 
     const sortedTimeIsos = sortBy(keys(obsMap))
 
-    each(sortedTimeIsos, timeIso => {
+    each(sortedTimeIsos, (timeIso) => {
       const obss = obsMap[timeIso]
       const timeMs = new Date(timeIso).getTime()
-      each(obss, obs => {
+      each(obss, (obs) => {
         if (obs.feature) {
           this.llmap.addGeoJson(str.strid, timeMs, obs.feature)
         }
@@ -99,10 +102,9 @@ export class VModel {
           //   console.debug('call addObsScalarData:', cloneDeep(obs.scalarData))
           this.llmap.addObsScalarData(str.strid, timeMs, obs.scalarData)
 
-          // TODO
-          // scalarData.position foreach { position ⇒
-          //   PositionsByTime.set(str.strid, timeMs, position)
-          // }
+          if (obs.scalarData.position) {
+            positionsByTime.set(str.strid, timeMs, obs.scalarData.position)
+          }
         }
       })
     })

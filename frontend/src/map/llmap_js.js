@@ -147,9 +147,9 @@ function setupLLMap(
     });
 
     map.on('click', function (e) {
-      const shiftKey = e.originalEvent.shiftKey;
-      const altKey   = e.originalEvent.altKey;
-      const metaKey  = e.originalEvent.metaKey;
+      const shiftKey = e.shiftKey  // e.originalEvent.shiftKey;
+      const altKey   = e.altKey  // e.originalEvent.altKey;
+      const metaKey  = e.metaKey  // e.originalEvent.metaKey;
 
       if (debug) console.debug("MAP CLICK: e=", e
         ,"latlng=",   e.latlng
@@ -409,6 +409,7 @@ function setupLLMap(
   }
 
   function addSelectionPoint(p) {
+    // console.debug("addSelectionPoint: p=", p);
     if (!p) {
       selectionGroup.clearLayers();
       selectionLatLon = null;

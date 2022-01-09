@@ -69,17 +69,17 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
     }
   }, 2000);
 
-  var mousemove = (function() {
+  const mousemove = (function() {
     function throttled(e) {
       if (mouseIn && seriesIndexForMouseHover !== undefined && chart) {
-        var event = chart.pointer.normalize(e.originalEvent);
-        var point = chart.series[seriesIndexForMouseHover].searchPoint(event, true);
+        const event = chart.pointer.normalize(e) //.originalEvent);
+        const point = chart.series[seriesIndexForMouseHover].searchPoint(event, true)
         // console.debug("strid=", strid, "normalizedEvent=", event, "point=", point);
-        hoveredPoint(point);
+        hoveredPoint(point)
       }
     }
     return throttle(throttled, 250)
-  })();
+  })()
 
   return {
     strid: strid,
@@ -123,10 +123,12 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
     chart = createChart();
 
     if (hoveredPoint) {
-      // TODO replace the $ stuff
-      // $(chart.container).on('mouseenter', mouseenter);
-      // $(chart.container).on('mousemove', mousemove);
-      // $(chart.container).on('mouseleave', mouseleave);
+      // TODO vue-based capture of chart
+      const chartId = "chart-container-" + strid
+      const idElm = document.getElementById(chartId)
+      idElm.onmouseenter = mouseenter
+      idElm.onmousemove = mousemove
+      idElm.onmouseleave = mouseleave
     }
   }
 
