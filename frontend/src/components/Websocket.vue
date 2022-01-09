@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { wsBaseUri } from 'boot/axios'
 import { Notif } from 'components/genmodel'
-import { computed, ref } from 'vue'
+import {computed, onUnmounted, ref} from 'vue'
 import Timeout = NodeJS.Timeout
 
 const props = defineProps<{
@@ -24,6 +24,12 @@ const label = computed(() =>
 const btnClass = computed(() =>
   connected.value ? 'ws-connected' : 'ws-disconnected'
 )
+
+onUnmounted(() => {
+  if (connected.value) {
+    closed()
+  }
+})
 
 function clicked() {
   console.debug('Clicked')
