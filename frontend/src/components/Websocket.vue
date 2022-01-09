@@ -49,7 +49,7 @@ function clicked() {
   }
   ws.onmessage = (event: MessageEvent) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const obj: any = JSON.parse(event.data)
+    const obj: any = JSON.parse(event.data as string)
     console.debug('onmessage: obj=', obj)
     const notif = obj as Notif
     props.handleNotification(notif)
