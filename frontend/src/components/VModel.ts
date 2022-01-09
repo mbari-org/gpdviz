@@ -4,7 +4,7 @@ import {
   IDataStream,
   IObsData,
   Notif,
-  JsonValue,
+  JsonValue, ILatLon, IVmDataStream,
 } from 'components/genmodel'
 
 import { positionsByTime } from 'src/map/PositionsByTime'
@@ -41,19 +41,19 @@ export class VModel {
     console.debug('VModel: handleNotification: notif=', notif)
     switch (notif.type) {
       case 'SensorSystemAdded':
-        // TODO
+        const {name, description, center, zoom, clickListener} = notif
+        this.addSensorSystem(name, description, center, zoom, clickListener)
         break
       case 'SensorSystemDeleted':
-        // TODO
+        this.deleteSensorSystem()
         break
       case 'SensorSystemUpdated':
-        // TODO
-        break
-      case 'SensorSystemRefresh':
-        // TODO
+        // TODO (nothing done in previous version)
         break
       case 'DataStreamAdded':
         // TODO
+        const {str} = notif
+        this.dataStreamAdded(str)
         break
       case 'DataStreamDeleted':
         // TODO
@@ -62,6 +62,11 @@ export class VModel {
         // TODO
         break
       case 'ObservationsAdded':
+        // TODO
+        break
+      case 'SensorSystemRefresh':
+        window.location.reload()
+        break
     }
   }
 
@@ -128,4 +133,25 @@ export class VModel {
       }
     })
   }
+
+  addSensorSystem(name?: string, description?: string, center?: ILatLon, zoom?: number, clickListener?: string) {
+    this.ss = {sysid: this.sysid, name, description, pushEvents: true, streams: {}, center, zoom, clickListener}
+    console.warn('center=', center)
+    if (center) {
+      const c = [center.lat, center.lon]
+      this.llmap.sensorSystemAdded(c, zoom || 11)
+    }
+  }
+
+  deleteSensorSystem() {
+    this.ss = {sysid: this.sysid, pushEvents: true, streams: {}}
+    this.llmap.sensorSystemDeleted()
+  }
+
+  dataStreamAdded(str: IVmDataStream) {
+    this.addStreamToMap(str)
+    this.ss = {sysid: this.sysid, pushEvents: true, streams: {}}
+    this.llmap.sensorSystemDeleted()
+  }
+
 }

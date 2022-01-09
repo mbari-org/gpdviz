@@ -2,6 +2,7 @@
 
 2022-01
 
+- preps for async notifications
 - initial chart display.
   Testing with http://localhost:8080/#/ss1
 - more llmap preps for data stream and observations.

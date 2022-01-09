@@ -6,6 +6,8 @@ import { positionsByTime } from 'src/map/PositionsByTime'
 interface ILLMap {
   sensorSystemAdded(center: number[], zoom: number): void
 
+  sensorSystemDeleted(): void
+
   setView(center: number[], zoom?: number): void
 
   addDataStream(str: IDataStream): void
@@ -74,6 +76,10 @@ export class LLMap {
 
   sensorSystemAdded(center: number[], zoom: number) {
     this._llmap.sensorSystemAdded(center, zoom)
+  }
+
+  sensorSystemDeleted() {
+    this._llmap.sensorSystemDeleted()
   }
 
   setView(center: number[], zoom?: number) {

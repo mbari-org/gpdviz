@@ -48,10 +48,10 @@ function clicked() {
     closed()
   }
   ws.onmessage = (event: MessageEvent) => {
-    console.debug('onmessage: event=', event)
-    // const notif = upickle.default.read[Notif](event.data.toString)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const notif = event.data // TODO see how goes
+    const obj: any = JSON.parse(event.data)
+    console.debug('onmessage: obj=', obj)
+    const notif = obj as Notif
     props.handleNotification(notif)
   }
   ws.onclose = () => {

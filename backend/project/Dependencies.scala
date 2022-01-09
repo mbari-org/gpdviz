@@ -13,10 +13,9 @@ object Dependencies {
   lazy val akkaHttpCors = "ch.megard" %% "akka-http-cors" % "0.2.2"
   lazy val akkaHttpSwagger = "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.11.0"
 
-  lazy val eriGeometry = "com.esri.geometry" % "esri-geometry-api" % "1.2.1"
+  lazy val esriGeometry = "com.esri.geometry" % "esri-geometry-api" % "1.2.1"
 
   lazy val pprint = "com.lihaoyi" %% "pprint" % "0.5.2"
-  lazy val upickle = "com.lihaoyi" %% "upickle" % "0.4.4"
 
   lazy val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
 

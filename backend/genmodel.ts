@@ -14,11 +14,6 @@ export interface IDataStream {
 export interface IDataStreamAdded {
   sysid: string
   str: IVmDataStream
-}
-
-export interface IDataStreamAdded {
-  sysid: string
-  str: IVmDataStream
   type: "DataStreamAdded"
 }
 

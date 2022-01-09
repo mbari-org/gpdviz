@@ -22,10 +22,9 @@ lazy val root = (project in file("."))
       akkaHttpTestKit,
       akkaHttpCors,
       akkaHttpSwagger,
-      eriGeometry,
+      esriGeometry,
       scalaLogging,
       pprint,
-      upickle,
       scalaTest % Test,
     ),
 

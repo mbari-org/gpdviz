@@ -33,7 +33,7 @@ class WebSocketPublisher()(implicit
     Flow.fromSinkAndSource(
       Sink.ignore,
       dataSource map { notif =>
-        TextMessage.Strict(upickle.default.write(notif))
+        TextMessage.Strict(notif.toJsonString)
       },
     )
   }
