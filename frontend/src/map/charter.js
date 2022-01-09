@@ -5,31 +5,31 @@ import throttle from 'lodash/throttle'
 import Highcharts from 'highcharts/highstock'
 
 export default function Charter(str, hoveredPoint, mouseOutside) {
-  var strid = str.strid;
-  var variables = str.variables;
+  const strid = str.strid
+  const variables = str.variables
 
-  var seriesIndexForMouseHover = undefined;
+  let seriesIndexForMouseHover = undefined
 
-  var title = (function() {
-    var t = str.chartStyle && str.chartStyle.title || (str.strid + (str.name ? ' - ' + str.name : ''));
+  const title = (function() {
+    const t = str.chartStyle && str.chartStyle.title || (str.strid + (str.name ? ' - ' + str.name : ''));
     return '<span style="font-size: small">' + t + '</span>';
   })();
-  var subtitle = str.chartStyle && str.chartStyle.subtitle;
+  const subtitle = str.chartStyle && str.chartStyle.subtitle;
 
-  var yAxisList = str.chartStyle && str.chartStyle.yAxis;
+  const yAxisList = str.chartStyle && str.chartStyle.yAxis;
 
-  var initialSeriesData = [];
+  const initialSeriesData = []
   each(variables, function(varProps) {
-    //console.debug("varProps=", varProps);
-    var varName = varProps.name;
+    //console.debug("varProps=", varProps)
+    const varName = varProps.name
 
     // FIXME should be indicated which series to use for map location
     if (varName === 'temperature' || varName === 'salinity') {
-      seriesIndexForMouseHover = initialSeriesData.length;
+      seriesIndexForMouseHover = initialSeriesData.length
     }
-    var chartStyle = varProps.chartStyle || {};
+    const chartStyle = varProps.chartStyle || {}
 
-    var options = {
+    const options = {
       yAxis: chartStyle.yAxis,
       name: varName + (varProps.units ? ' (' +varProps.units+ ')' : ''),
       data: []
@@ -46,35 +46,35 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
       //    lineWidthPlus: 0
       //  }
       //}
-    };
-    // console.debug("varName=", varName, "options=", cloneDeep(options));
-
-    initialSeriesData.push(options);
-  });
-
-  var chart = undefined;
-  var serieses = undefined;
-
-  var lastAddedX = {};  // {seriesIndex -> x}
-
-  var needRedraw = true;
-
-  var mouseIn = false;
-
-  setInterval(function() {
-    if (chart && needRedraw) {
-      // console.debug("redrawing chart ", strid);
-      chart.redraw();
-      needRedraw = false;
     }
-  }, 2000);
+    // console.debug("varName=", varName, "options=", cloneDeep(options))
 
-  const mousemove = (function() {
+    initialSeriesData.push(options)
+  })
+
+  let chart = undefined
+  let serieses = undefined
+
+  let lastAddedX = {}  // {seriesIndex -> x}
+
+  let needRedraw = true
+
+  let mouseIn = false
+
+  setInterval(() => {
+    if (chart && needRedraw) {
+      // console.debug("redrawing chart ", strid)
+      chart.redraw()
+      needRedraw = false
+    }
+  }, 2000)
+
+  const mousemove = (() => {
     function throttled(e) {
       if (mouseIn && seriesIndexForMouseHover !== undefined && chart) {
-        const event = chart.pointer.normalize(e) //.originalEvent);
+        const event = chart.pointer.normalize(e) //.originalEvent)
         const point = chart.series[seriesIndexForMouseHover].searchPoint(event, true)
-        // console.debug("strid=", strid, "normalizedEvent=", event, "point=", point);
+        // console.debug("strid=", strid, "normalizedEvent=", event, "point=", point)
         hoveredPoint(point)
       }
     }
@@ -86,41 +86,41 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
     addChartPoint: addChartPoint,
     activateChart: activateChart,
     deactivateChart: deactivateChart
-  };
+  }
 
   function addChartPoint(seriesIndex, timeMs, y) {
-    //console.debug("addChartPoint: strid=", strid, "timeMs=", timeMs, "y=", y);
+    //console.debug("addChartPoint: strid=", strid, "timeMs=", timeMs, "y=", y)
 
-    needRedraw = true;
+    needRedraw = true
 
-    initialSeriesData[seriesIndex].data.push([timeMs, y]);
+    initialSeriesData[seriesIndex].data.push([timeMs, y])
 
     if (serieses) {
-      var lastX = lastAddedX[seriesIndex];
+      const lastX = lastAddedX[seriesIndex]
       if (lastX === undefined) {
-        lastAddedX[seriesIndex] = timeMs;
-        // console.error("strid=" +strid+ " seriesIndex=" +seriesIndex+": FIRST timeMs(" +timeMs+ ")");
+        lastAddedX[seriesIndex] = timeMs
+        // console.error("strid=" +strid+ " seriesIndex=" +seriesIndex+": FIRST timeMs(" +timeMs+ ")")
       }
       else if (timeMs <= lastX) {
-        console.error("strid=" +strid+ " seriesIndex=" +seriesIndex+": timeMs(" +timeMs+ ") <= lastX(" +lastX+ ") diff=" + (lastX - timeMs));
+        console.error("strid=" +strid+ " seriesIndex=" +seriesIndex+": timeMs(" +timeMs+ ") <= lastX(" +lastX+ ") diff=" + (lastX - timeMs))
       }
       else {
-        lastAddedX[seriesIndex] = timeMs;
+        lastAddedX[seriesIndex] = timeMs
       }
 
       // addPoint (Object options, [Boolean redraw], [Boolean shift], [Mixed animation])
-      serieses[seriesIndex].addPoint([timeMs, y], false);
+      serieses[seriesIndex].addPoint([timeMs, y], false)
     }
-    // else console.error("!!! no serieses !!!!!");
+    // else console.error("!!! no serieses !!!!!")
   }
 
   function activateChart() {
-    deactivateChart();
-    needRedraw = true;
+    deactivateChart()
+    needRedraw = true
     each(initialSeriesData, function(s) {
-      s.data = sortBy(s.data, function(xy) { return xy[0] });
-    });
-    chart = createChart();
+      s.data = sortBy(s.data, function(xy) { return xy[0] })
+    })
+    chart = createChart()
 
     if (hoveredPoint) {
       // TODO vue-based capture of chart
@@ -133,34 +133,41 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
   }
 
   function mouseenter(e) {
-    mouseIn = true;
+    mouseIn = true
   }
 
   function mouseleave(e) {
     if (mouseIn) {
-      mouseIn = false;
-      mouseOutside();
+      mouseIn = false
+      mouseOutside()
     }
   }
 
   function deactivateChart() {
-    needRedraw = false;
-    lastAddedX = {};
-    if (chart) chart.destroy();
-    chart = undefined;
-    serieses = undefined;
-    mouseIn = false;
-    mouseOutside();
+    needRedraw = false
+    lastAddedX = {}
+    if (chart) chart.destroy()
+    chart = undefined
+    serieses = undefined
+    mouseIn = false
+    mouseOutside()
     if (hoveredPoint && chart && chart.container) {
+      console.debug('deactivateChart')
       // TODO replace the $ stuff
-      // $(chart.container).off('mouseenter', mouseenter);
-      // $(chart.container).off('mousemove', mousemove);
-      // $(chart.container).off('mouseleave', mouseleave);
+      // $(chart.container).off('mouseenter', mouseenter)
+      // $(chart.container).off('mousemove', mousemove)
+      // $(chart.container).off('mouseleave', mouseleave)
+      // like this:?
+      const chartId = "chart-container-" + strid
+      const idElm = document.getElementById(chartId)
+      idElm.onmouseenter = undefined
+      idElm.onmousemove = undefined
+      idElm.onmouseleave = undefined
     }
   }
 
   function createChart() {
-    // console.warn(str.strid, "createChart: str.chartHeightPx=", str.chartHeightPx);
+    // console.warn(str.strid, "createChart: str.chartHeightPx=", str.chartHeightPx)
     // http://stackoverflow.com/q/23624448/830737
     return new Highcharts.StockChart({
       chart: {
@@ -168,7 +175,7 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
         height: str.chartHeightPx - 4,
         events: {
           load: function () {
-            serieses = this.series;
+            serieses = this.series
           },
           zoomType: 'x'
         }
@@ -256,6 +263,6 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
           }
         }
       }
-    });
+    })
   }
 }
