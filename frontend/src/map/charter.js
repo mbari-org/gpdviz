@@ -160,7 +160,7 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
   }
 
   function createChart() {
-    console.warn(str.strid, "createChart: str.chartHeightPx=", str.chartHeightPx);
+    // console.warn(str.strid, "createChart: str.chartHeightPx=", str.chartHeightPx);
     // http://stackoverflow.com/q/23624448/830737
     return new Highcharts.StockChart({
       chart: {

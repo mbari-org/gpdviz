@@ -22,7 +22,7 @@ const center = computed(() => {
 let llmap: LLMap | null = null
 
 onMounted(() => {
-  const zoom = 10
+  const zoom = 11
 
   llmap = new LLMap(center.value, zoom)
 

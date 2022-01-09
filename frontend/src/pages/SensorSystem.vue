@@ -7,8 +7,9 @@ import { ISensorSystem, Notif } from 'components/genmodel'
 import SysActivity from 'components/SysActivity.vue'
 import GpdvizMap from 'components/GpdvizMap.vue'
 import Websocket from 'components/Websocket.vue'
-import { LLMap } from 'src/map/LLMap'
+import { ClickEvent, LLMap } from 'src/map/LLMap'
 import { VModel } from 'components/VModel'
+import axios from 'axios'
 
 const route = useRoute()
 
@@ -16,6 +17,30 @@ const system = ref<ISensorSystem | null>(null)
 
 let llmap: LLMap | null = null
 let vm: VModel | null = null
+
+// TODO test
+function clickListener(clickEvent: ClickEvent) {
+  console.debug('clickListener: clickEvent=', clickEvent)
+  const ss = system.value
+  if (!ss || !ss.clickListener) {
+    return
+  }
+  const method = 'POST'
+  const url = ss.clickListener
+  const data = clickEvent
+  const headers: { [key: string]: string } = {
+    'Content-type': 'application/json',
+  }
+
+  void (async () => {
+    try {
+      const response = await axios({ method, url, data, headers })
+      console.debug('clickListener: response=', response)
+    } catch (e) {
+      console.warn(`failure in call to click listener ${url}`, e)
+    }
+  })()
+}
 
 function gotLLMap(_llmap: LLMap) {
   llmap = _llmap
@@ -25,6 +50,7 @@ function gotLLMap(_llmap: LLMap) {
   vm = new VModel(sysid, llmap)
 
   if (system.value) {
+    llmap.setClickListener(clickListener)
     vm.refreshSystem(system.value)
   }
 }

@@ -17,11 +17,22 @@ interface ILLMap {
   addSelectionPoint(p?: number[]): void
 }
 
+export interface ClickEvent {
+  lat: number
+  lon: number
+  shiftKey: boolean
+  altKey: boolean
+  metaKey: boolean
+}
+
 export class LLMap {
-  //extends ILLMap {
   _llmap: ILLMap
 
+  _clickListener?: (clickEvent: ClickEvent) => void
+
   constructor(center: number[], zoom: number) {
+    this._clickListener = undefined
+
     const hoveredPoint = (p?: { [key: string]: unknown }) => {
       if (p) {
         const strid = p['strid'] as string
@@ -31,16 +42,18 @@ export class LLMap {
         //console.log("hoveredPoint: p=" + p + " x=" +x+ " strid=" + strid)
 
         const latLon = positionsByTime.get(strid, x)
-        console.debug('PRIOR addSelectionPoint: latLon=', latLon)
         if (latLon) {
           this._llmap.addSelectionPoint([latLon.lat, latLon.lon])
         }
       }
     }
 
+    const clickHandler = (clickEvent: ClickEvent) => {
+      if (this._clickListener) {
+        this._clickListener(clickEvent)
+      }
+    }
     // TODO
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const clickHandler = () => {}
     const includeGoogleMap = false
     const mouseOutside = () => this._llmap?.addSelectionPoint()
 
@@ -53,6 +66,10 @@ export class LLMap {
       clickHandler,
       includeGoogleMap
     )
+  }
+
+  setClickListener(listener: (clickEvent: ClickEvent) => void) {
+    this._clickListener = listener
   }
 
   sensorSystemAdded(center: number[], zoom: number) {
