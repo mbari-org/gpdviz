@@ -85,9 +85,15 @@ export class VModel {
     }
   }
 
+  // TODO addAbsoluteChartIfSo
   addAbsoluteChartIfSo(strid: string, chartStyle?: JsonValue) {
     if (debug)
-      console.debug('addStreamToMap: strid=', strid, 'chartStyle=', chartStyle)
+      console.debug(
+        'addAbsoluteChartIfSo: strid=',
+        strid,
+        'chartStyle=',
+        chartStyle
+      )
   }
 
   addStreamToMap(str: IDataStream) {
@@ -97,7 +103,11 @@ export class VModel {
     this.llmap.addDataStream(str)
   }
 
-  addObservationsToMap(strid: string, obsMap: { [key: string]: IObsData[] }) {
+  addObservationsToMap(
+    strid: string,
+    obsMap: { [key: string]: IObsData[] },
+    str: IDataStream | undefined = undefined
+  ) {
     // TODO remove selective logging
     if (strid === 'boundary_polygon')
       console.debug('addObservationsToMap:', 'obsMap=', cloneDeep(obsMap))
@@ -106,6 +116,11 @@ export class VModel {
 
     each(sortedTimeIsos, (timeIso) => {
       const obss = obsMap[timeIso]
+
+      if (str) {
+        this.addObservationsToStream(str, timeIso, obss)
+      }
+
       const timeMs = new Date(timeIso).getTime()
       each(obss, (obs) => {
         //console.warn('OBS=', JSON.stringify(obs, null, '  '))
@@ -126,6 +141,13 @@ export class VModel {
         }
       })
     })
+  }
+
+  addObservationsToStream(str: IDataStream, timeIso: string, obss: IObsData[]) {
+    if (!str.observations) {
+      str.observations = {}
+    }
+    str.observations[timeIso] = obss
   }
 
   refreshSystem() {
@@ -199,11 +221,19 @@ export class VModel {
       const updatedStreams = ss.streams || {}
       updatedStreams[strid] = updatedStream
     } else {
-      console.debug(`addVariableDef: undefined strid=${strid}`)
+      console.warn(`variableDefAdded: undefined strid=${strid}`)
     }
   }
 
   observationsAdded(strid: string, obss: { [key: string]: IVmObsData[] }) {
-    this.addObservationsToMap(strid, obss)
+    const ss = this.ss.value
+    if (!ss) return
+
+    const stream = ss.streams[strid]
+    if (stream) {
+      this.addObservationsToMap(strid, obss, stream)
+    } else {
+      console.warn(`observationsAdded: undefined strid=${strid}`)
+    }
   }
 }

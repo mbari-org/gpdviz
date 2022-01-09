@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { wsBaseUri } from 'boot/axios'
 import { Notif } from 'components/genmodel'
-import {computed, onUnmounted, ref} from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 import Timeout = NodeJS.Timeout
 
 const props = defineProps<{
