@@ -87,22 +87,22 @@ case class VmSensorSystem(
 case class VmVariableDef(
     name:       String,
     units:      Option[String] = None,
-    chartStyle: Option[String] = None,
+    chartStyle: Option[JsValue] = None,
 )
 
 case class VmDataStream(
     strid:        String,
     name:         Option[String] = None,
     description:  Option[String] = None,
-    mapStyle:     Option[String] = None,
+    mapStyle:     Option[JsValue] = None,
     zOrder:       Int = 0,
     variables:    Option[List[VmVariableDef]] = None,
-    chartStyle:   Option[String] = None,
+    chartStyle:   Option[JsValue] = None,
     observations: Option[Map[String, List[VmObsData]]] = None,
 )
 
 case class VmObsData(
-    feature:    Option[String],
-    geometry:   Option[String],
+    feature:    Option[Feature],
+    geometry:   Option[Geometry],
     scalarData: Option[ScalarData],
 )

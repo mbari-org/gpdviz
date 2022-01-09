@@ -169,13 +169,14 @@ function setupLLMap(
   }
 
   function markerCreator(geojson, mapStyle) {
-    //console.debug(":::::: geojson=", geojson);
+    // console.debug(":::::: markerCreator: mapStyle=", cloneDeep(mapStyle))
+    // console.debug(":::::: markerCreator: geojson=", geojson)
     return function() {
       return L.geoJSON(geojson, {
         style: mapStyle,
         pointToLayer: function (feature, latlng) {
           if (!mapStyle.radius) {
-            mapStyle.radius = 5;
+            mapStyle.radius = 5
           }
           return L.circleMarker(latlng, mapStyle);
         }
@@ -289,7 +290,7 @@ function setupLLMap(
       mapStyle = str.mapStyle ? cloneDeep(str.mapStyle) : {};
     }
 
-    //console.debug("addGeoJson: timeMs=", timeMs, "geoJson=", geoJson, "mapStyle=", mapStyle);
+    // console.debug("addGeoJson: timeMs=", timeMs, "geoJson=", geoJson, "mapStyle=", mapStyle)
 
     byStrId[strid].geoJsons[geoJsonKey] = geoJson;
 

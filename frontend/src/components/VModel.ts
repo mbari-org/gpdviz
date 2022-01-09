@@ -108,6 +108,7 @@ export class VModel {
       const obss = obsMap[timeIso]
       const timeMs = new Date(timeIso).getTime()
       each(obss, (obs) => {
+        //console.warn('OBS=', JSON.stringify(obs, null, '  '))
         if (obs.feature) {
           this.llmap.addGeoJson(strid, timeMs, obs.feature)
         }

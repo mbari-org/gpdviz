@@ -44,11 +44,11 @@ class Notifier(db: DbInterface, pub: Publisher)(implicit ec: ExecutionContext)
           str.strid,
           str.name,
           str.description,
-          mapStyle = str.mapStyle.map(_.toJson.compactPrint),
+          mapStyle = str.mapStyle,
           str.zOrder,
-          chartStyle = str.chartStyle.map(_.toJson.compactPrint),
+          chartStyle = str.chartStyle,
           variables = str.variables.map(
-            _.map(v => VmVariableDef(v.name, v.units, v.chartStyle.map(_.toJson.compactPrint))),
+            _.map(v => VmVariableDef(v.name, v.units, v.chartStyle)),
           ),
         ),
       ),
@@ -68,7 +68,7 @@ class Notifier(db: DbInterface, pub: Publisher)(implicit ec: ExecutionContext)
           vd = VmVariableDef(
             name = vd.name,
             units = vd.units,
-            chartStyle = vd.chartStyle.map(_.toJson.compactPrint),
+            chartStyle = vd.chartStyle,
           ),
         ),
       )
@@ -83,8 +83,8 @@ class Notifier(db: DbInterface, pub: Publisher)(implicit ec: ExecutionContext)
       val obsDataList = collection.mutable.ListBuffer[VmObsData]()
       list foreach { o =>
         obsDataList += VmObsData(
-          feature = o.feature.map(_.toJson.compactPrint),
-          geometry = o.geometry.map(_.toJson.compactPrint),
+          feature = o.feature,
+          geometry = o.geometry,
           scalarData = o.scalarData,
         )
       }

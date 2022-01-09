@@ -23,7 +23,6 @@ let llmap: LLMap | null = null
 
 onMounted(() => {
   llmap = new LLMap(center.value, zoom.value)
-  llmap.sensorSystemAdded(center.value, zoom.value)
   emit('gotLLMap', llmap)
 })
 </script>
