@@ -4,7 +4,11 @@ import {
   IDataStream,
   IObsData,
   Notif,
-  JsonValue, ILatLon, IVmDataStream, IVmVariableDef, IVmObsData,
+  JsonValue,
+  ILatLon,
+  IVmDataStream,
+  IVmVariableDef,
+  IVmObsData,
 } from 'components/genmodel'
 
 import { positionsByTime } from 'src/map/PositionsByTime'
@@ -15,7 +19,7 @@ import each from 'lodash/each'
 import keys from 'lodash/keys'
 import cloneDeep from 'lodash/cloneDeep'
 import sortBy from 'lodash/sortBy'
-import {Ref} from 'vue';
+import { Ref } from 'vue'
 
 const debug = /.*debug=.*\bdebug\b.*/.exec(window.location.search)
 
@@ -43,7 +47,7 @@ export class VModel {
     console.debug('VModel: handleNotification: notif=', notif)
     switch (notif.type) {
       case 'SensorSystemAdded': {
-        const {name, description, center, zoom, clickListener} = notif
+        const { name, description, center, zoom, clickListener } = notif
         this.sensorSystemAdded(name, description, center, zoom, clickListener)
         break
       }
@@ -56,7 +60,7 @@ export class VModel {
         break
       }
       case 'DataStreamAdded': {
-        const {str} = notif
+        const { str } = notif
         this.dataStreamAdded(str)
         break
       }
@@ -65,12 +69,12 @@ export class VModel {
         break
       }
       case 'VariableDefAdded': {
-        const {strid, vd} = notif
+        const { strid, vd } = notif
         this.variableDefAdded(strid, vd)
         break
       }
       case 'ObservationsAdded': {
-        const {strid, obss} = notif
+        const { strid, obss } = notif
         this.observationsAdded(strid, obss)
         break
       }
@@ -93,10 +97,7 @@ export class VModel {
     this.llmap.addDataStream(str)
   }
 
-  addObservationsToMap(
-    strid: string,
-    obsMap: { [key: string]: IObsData[] }
-  ) {
+  addObservationsToMap(strid: string, obsMap: { [key: string]: IObsData[] }) {
     // TODO remove selective logging
     if (strid === 'boundary_polygon')
       console.debug('addObservationsToMap:', 'obsMap=', cloneDeep(obsMap))
@@ -145,8 +146,23 @@ export class VModel {
     })
   }
 
-  sensorSystemAdded(name?: string, description?: string, center?: ILatLon, zoom?: number, clickListener?: string) {
-    this.ss.value = {sysid: this.sysid, name, description, pushEvents: true, streams: {}, center, zoom, clickListener}
+  sensorSystemAdded(
+    name?: string,
+    description?: string,
+    center?: ILatLon,
+    zoom?: number,
+    clickListener?: string
+  ) {
+    this.ss.value = {
+      sysid: this.sysid,
+      name,
+      description,
+      pushEvents: true,
+      streams: {},
+      center,
+      zoom,
+      clickListener,
+    }
     // console.warn('center=', center)
     if (center) {
       const c = [center.lat, center.lon]
@@ -155,7 +171,7 @@ export class VModel {
   }
 
   sensorSystemDeleted() {
-    this.ss.value = {sysid: this.sysid, pushEvents: true, streams: {}}
+    this.ss.value = { sysid: this.sysid, pushEvents: true, streams: {} }
     this.llmap.sensorSystemDeleted()
   }
 
@@ -181,14 +197,12 @@ export class VModel {
 
       const updatedStreams = ss.streams || {}
       updatedStreams[strid] = updatedStream
-    }
-    else {
+    } else {
       console.debug(`addVariableDef: undefined strid=${strid}`)
     }
   }
 
-  observationsAdded(strid: string, obss: { [ key: string ]: IVmObsData[] }) {
+  observationsAdded(strid: string, obss: { [key: string]: IVmObsData[] }) {
     this.addObservationsToMap(strid, obss)
   }
-
 }

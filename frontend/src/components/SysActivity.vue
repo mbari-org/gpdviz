@@ -34,11 +34,7 @@ const observationsSummary = computed(() => (ds: IDataStream) => {
     </div>
     <div>
       <ul style="margin-left: -20px">
-        <li
-          v-for="(str, strid) in system.streams"
-          :key="strid"
-          class="q-mb-xs"
-        >
+        <li v-for="(str, strid) in system.streams" :key="strid" class="q-mb-xs">
           <div>
             <span class="text-bold">{{ str.strid }}</span>
             <ul v-if="str.variables">

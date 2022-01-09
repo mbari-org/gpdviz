@@ -70,8 +70,7 @@ onMounted(async () => {
     // console.debug('Got:', JSON.stringify(response.data, null, '   '))
     // console.debug('Got:', response.data)
     system.value = response.data
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e)
   }
 })
@@ -80,10 +79,7 @@ onMounted(async () => {
 <template>
   <q-page>
     <!--    <pre> {{ system }}</pre>-->
-    <Websocket
-      :sysid="sysid"
-      :handleNotification="handleNotification"
-    />
+    <Websocket :sysid="sysid" :handleNotification="handleNotification" />
     <div
       class="full-width row q-gutter-x-md justify-center"
       style="text-align: center; background-color: #ebfaf5"
