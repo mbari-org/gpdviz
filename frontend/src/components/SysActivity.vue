@@ -4,10 +4,15 @@ import { IDataStream, ISensorSystem } from 'components/genmodel'
 
 import keys from 'lodash/keys'
 import sortBy from 'lodash/sortBy'
+import values from 'lodash/values'
 
-defineProps<{
+const props = defineProps<{
   system: ISensorSystem
 }>()
+
+const sortedStreams = computed(() =>
+  sortBy(values(props.system.streams), str => str.strid)
+)
 
 const observationsSummary = computed(() => (ds: IDataStream) => {
   const isoTimes = sortBy(keys(ds.observations))
@@ -34,7 +39,7 @@ const observationsSummary = computed(() => (ds: IDataStream) => {
     </div>
     <div>
       <ul style="margin-left: -20px">
-        <li v-for="(str, strid) in system.streams" :key="strid" class="q-mb-xs">
+        <li v-for="str in sortedStreams" :key="str.strid" class="q-mb-xs">
           <div>
             <span class="text-bold">{{ str.strid }}</span>
             <ul v-if="str.variables">
