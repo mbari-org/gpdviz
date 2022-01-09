@@ -12,6 +12,7 @@ import { VModel } from 'components/VModel'
 import axios from 'axios'
 
 const route = useRoute()
+const sysid: string = route.params.sysid
 
 const system = ref<ISensorSystem | null>(null)
 
@@ -46,37 +47,33 @@ function gotLLMap(_llmap: LLMap) {
   llmap = _llmap
   console.debug('gotLLMap: llmap=', llmap)
 
-  const sysid: string = route.params.sysid
-  vm = new VModel(sysid, llmap)
-
   if (system.value) {
+    vm = new VModel(sysid, system, llmap)
     llmap.setClickListener(clickListener)
-    vm.refreshSystem(system.value)
+
+    vm.refreshSystem()
   }
 }
 
 function handleNotification(notif: Notif) {
-  console.debug('handleNotification: notif=', notif)
+  // console.debug('handleNotification: notif=', notif)
   if (vm) {
     vm.handleNotification(notif)
   }
 }
 
-onMounted(() => {
-  // (eslint has been such a pita)
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-  const url = `ss/${route.params.sysid}`
+onMounted(async () => {
+  const url = `ss/${sysid}`
   console.debug(`GET '${url}'`)
-  api
-    .get<ISensorSystem>(url)
-    .then((response) => {
-      // console.debug('Got:', JSON.stringify(response.data, null, '   '))
-      // console.debug('Got:', response.data)
-      system.value = response.data
-    })
-    .catch((e) => {
-      console.error(e)
-    })
+  try {
+    const response = await api.get<ISensorSystem>(url)
+    // console.debug('Got:', JSON.stringify(response.data, null, '   '))
+    // console.debug('Got:', response.data)
+    system.value = response.data
+  }
+  catch (e) {
+    console.error(e)
+  }
 })
 </script>
 
@@ -84,7 +81,7 @@ onMounted(() => {
   <q-page>
     <!--    <pre> {{ system }}</pre>-->
     <Websocket
-      :sysid="route.params.sysid"
+      :sysid="sysid"
       :handleNotification="handleNotification"
     />
     <div
@@ -92,7 +89,7 @@ onMounted(() => {
       style="text-align: center; background-color: #ebfaf5"
     >
       <div class="text-bold row">
-        <code>{{ $route.params.sysid }}</code>
+        <code>{{ sysid }}</code>
         <div v-if="system && system.name">- {{ system.name }}</div>
       </div>
       <div v-if="system && system.description">{{ system.description }}</div>

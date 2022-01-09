@@ -4,7 +4,7 @@ import {
   IDataStream,
   IObsData,
   Notif,
-  JsonValue, ILatLon, IVmDataStream,
+  JsonValue, ILatLon, IVmDataStream, IVmVariableDef, IVmObsData,
 } from 'components/genmodel'
 
 import { positionsByTime } from 'src/map/PositionsByTime'
@@ -15,6 +15,7 @@ import each from 'lodash/each'
 import keys from 'lodash/keys'
 import cloneDeep from 'lodash/cloneDeep'
 import sortBy from 'lodash/sortBy'
+import {Ref} from 'vue';
 
 const debug = /.*debug=.*\bdebug\b.*/.exec(window.location.search)
 
@@ -27,46 +28,56 @@ export class VModel {
   sysid: string
   llmap: LLMap
   // ss: Ref<ISensorSystem>
-  ss: ISensorSystem
+  ss: Ref<ISensorSystem | null>
 
-  constructor(sysid: string, llmap: LLMap) {
+  constructor(sysid: string, ss: Ref<ISensorSystem | null>, llmap: LLMap) {
     this.sysid = sysid
     this.llmap = llmap
     // this.ss = ref<ISensorSystem>({sysid, pushEvents: true, streams: {}})
-    this.ss = { sysid, pushEvents: true, streams: {} }
+    // this.ss = { sysid, pushEvents: true, streams: {} }
+    this.ss = ss
     console.debug(`constructed VModel: sysid='${sysid}'`)
   }
 
   handleNotification(notif: Notif) {
     console.debug('VModel: handleNotification: notif=', notif)
     switch (notif.type) {
-      case 'SensorSystemAdded':
+      case 'SensorSystemAdded': {
         const {name, description, center, zoom, clickListener} = notif
-        this.addSensorSystem(name, description, center, zoom, clickListener)
+        this.sensorSystemAdded(name, description, center, zoom, clickListener)
         break
-      case 'SensorSystemDeleted':
-        this.deleteSensorSystem()
+      }
+      case 'SensorSystemDeleted': {
+        this.sensorSystemDeleted()
         break
-      case 'SensorSystemUpdated':
+      }
+      case 'SensorSystemUpdated': {
         // TODO (nothing done in previous version)
         break
-      case 'DataStreamAdded':
-        // TODO
+      }
+      case 'DataStreamAdded': {
         const {str} = notif
         this.dataStreamAdded(str)
         break
-      case 'DataStreamDeleted':
+      }
+      case 'DataStreamDeleted': {
         // TODO
         break
-      case 'VariableDefAdded':
-        // TODO
+      }
+      case 'VariableDefAdded': {
+        const {strid, vd} = notif
+        this.variableDefAdded(strid, vd)
         break
-      case 'ObservationsAdded':
-        // TODO
+      }
+      case 'ObservationsAdded': {
+        const {strid, obss} = notif
+        this.observationsAdded(strid, obss)
         break
-      case 'SensorSystemRefresh':
+      }
+      case 'SensorSystemRefresh': {
         window.location.reload()
         break
+      }
     }
   }
 
@@ -83,11 +94,11 @@ export class VModel {
   }
 
   addObservationsToMap(
-    str: IDataStream,
+    strid: string,
     obsMap: { [key: string]: IObsData[] }
   ) {
     // TODO remove selective logging
-    if (str.strid === 'boundary_polygon')
+    if (strid === 'boundary_polygon')
       console.debug('addObservationsToMap:', 'obsMap=', cloneDeep(obsMap))
 
     const sortedTimeIsos = sortBy(keys(obsMap))
@@ -97,28 +108,28 @@ export class VModel {
       const timeMs = new Date(timeIso).getTime()
       each(obss, (obs) => {
         if (obs.feature) {
-          this.llmap.addGeoJson(str.strid, timeMs, obs.feature)
+          this.llmap.addGeoJson(strid, timeMs, obs.feature)
         }
         if (obs.geometry) {
-          this.llmap.addGeoJson(str.strid, timeMs, obs.geometry)
+          this.llmap.addGeoJson(strid, timeMs, obs.geometry)
         }
         if (obs.scalarData) {
-          // if (str.strid === 'boundary_polygon')
+          // if (strid === 'boundary_polygon')
           //   console.debug('call addObsScalarData:', cloneDeep(obs.scalarData))
-          this.llmap.addObsScalarData(str.strid, timeMs, obs.scalarData)
+          this.llmap.addObsScalarData(strid, timeMs, obs.scalarData)
 
           if (obs.scalarData.position) {
-            positionsByTime.set(str.strid, timeMs, obs.scalarData.position)
+            positionsByTime.set(strid, timeMs, obs.scalarData.position)
           }
         }
       })
     })
   }
 
-  refreshSystem(vss: ISensorSystem) {
+  refreshSystem() {
+    if (!this.ss.value) return
+    const vss: ISensorSystem = this.ss.value
     console.debug('refreshSystem: vss=', vss)
-    this.ss = vss
-    // this.ss.value = vss
 
     if (vss.center) {
       const c = [vss.center.lat, vss.center.lon]
@@ -129,29 +140,55 @@ export class VModel {
       this.addAbsoluteChartIfSo(strid, str.chartStyle)
       this.addStreamToMap(str)
       if (str.observations) {
-        this.addObservationsToMap(str, str.observations)
+        this.addObservationsToMap(str.strid, str.observations)
       }
     })
   }
 
-  addSensorSystem(name?: string, description?: string, center?: ILatLon, zoom?: number, clickListener?: string) {
-    this.ss = {sysid: this.sysid, name, description, pushEvents: true, streams: {}, center, zoom, clickListener}
-    console.warn('center=', center)
+  sensorSystemAdded(name?: string, description?: string, center?: ILatLon, zoom?: number, clickListener?: string) {
+    this.ss.value = {sysid: this.sysid, name, description, pushEvents: true, streams: {}, center, zoom, clickListener}
+    // console.warn('center=', center)
     if (center) {
       const c = [center.lat, center.lon]
       this.llmap.sensorSystemAdded(c, zoom || 11)
     }
   }
 
-  deleteSensorSystem() {
-    this.ss = {sysid: this.sysid, pushEvents: true, streams: {}}
+  sensorSystemDeleted() {
+    this.ss.value = {sysid: this.sysid, pushEvents: true, streams: {}}
     this.llmap.sensorSystemDeleted()
   }
 
   dataStreamAdded(str: IVmDataStream) {
+    const ss = this.ss.value
+    if (!ss) return
+
+    ss.streams[str.strid] = str
+    // TODO addAbsoluteChartIfSo(str.strid, str.chartStyle)
     this.addStreamToMap(str)
-    this.ss = {sysid: this.sysid, pushEvents: true, streams: {}}
-    this.llmap.sensorSystemDeleted()
+  }
+
+  variableDefAdded(strid: string, vd: IVmVariableDef) {
+    const ss = this.ss.value
+    if (!ss) return
+
+    const stream = ss.streams[strid]
+    if (stream) {
+      const newVariables = stream.variables || []
+      newVariables.push(vd)
+      const updatedStream = stream
+      updatedStream.variables = newVariables
+
+      const updatedStreams = ss.streams || {}
+      updatedStreams[strid] = updatedStream
+    }
+    else {
+      console.debug(`addVariableDef: undefined strid=${strid}`)
+    }
+  }
+
+  observationsAdded(strid: string, obss: { [ key: string ]: IVmObsData[] }) {
+    this.addObservationsToMap(strid, obss)
   }
 
 }

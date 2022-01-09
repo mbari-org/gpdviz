@@ -16,7 +16,7 @@ import each from 'lodash/each'
 import indexOf from 'lodash/indexOf'
 import ldMap from 'lodash/map'
 
-console.debug('localConfig=', localConfig)
+// console.debug('localConfig=', localConfig)
 
 function setupLLMap(
   mapid,
@@ -215,7 +215,7 @@ function setupLLMap(
   }
 
   function sensorSystemAdded(center, zoom) {
-    console.debug('sensorSystemAdded: center=', center)
+    // console.debug('sensorSystemAdded: center=', center)
     clearMarkers();
     setView(center, zoom)
   }

@@ -57,13 +57,7 @@ export class PositionsByTime {
 export const positionsByTime = new PositionsByTime()
 
 class TimePos {
-  timeMs: number
-  position: ILatLon
-
-  constructor(timeMs: number, position: ILatLon) {
-    this.timeMs = timeMs
-    this.position = position
-  }
+  constructor(public timeMs: number, public position: ILatLon) {}
 }
 
 class StrTimePos {

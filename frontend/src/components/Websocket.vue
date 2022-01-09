@@ -43,17 +43,20 @@ function clicked() {
     }, 40 * 1000)
     connecting.value = false
   }
+
   ws.onerror = (event: Event) => {
     console.error('onerror: event=', event)
     closed()
   }
+
   ws.onmessage = (event: MessageEvent) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const obj: any = JSON.parse(event.data as string)
-    console.debug('onmessage: obj=', obj)
+    const obj = JSON.parse(event.data as string)
+    // console.debug('onmessage: obj=', obj)
     const notif = obj as Notif
     props.handleNotification(notif)
   }
+
   ws.onclose = () => {
     closed()
   }

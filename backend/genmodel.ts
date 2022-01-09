@@ -48,12 +48,6 @@ export interface IObservationsAdded {
   sysid: string
   strid: string
   obss: { [ key: string ]: IVmObsData[] }
-}
-
-export interface IObservationsAdded {
-  sysid: string
-  strid: string
-  obss: { [ key: string ]: IVmObsData[] }
   type: "ObservationsAdded"
 }
 
@@ -142,12 +136,6 @@ export interface IVariableDef {
   name: string
   units?: string
   chartStyle?: JsonValue
-}
-
-export interface IVariableDefAdded {
-  sysid: string
-  strid: string
-  vd: IVmVariableDef
 }
 
 export interface IVariableDefAdded {
