@@ -45,7 +45,9 @@ const observationsSummary = computed(() => (ds: IDataStream) => {
               {{ str.strid }}
               <q-tooltip v-if="str.mapStyle || str.chartStyle">
                 <pre v-if="str.mapStyle">mapStyle = {{ str.mapStyle }}</pre>
-                <pre v-if="str.chartStyle">chartStyle = {{ str.chartStyle }}</pre>
+                <pre v-if="str.chartStyle">
+chartStyle = {{ str.chartStyle }}</pre
+                >
               </q-tooltip>
             </span>
             <ul v-if="str.variables">

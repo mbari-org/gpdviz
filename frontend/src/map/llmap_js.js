@@ -122,7 +122,7 @@ function setupLLMap(
 
   // popupEvents:
   {
-    map.on('popupopen', function(e) {
+    map.on('popupopen', function (e) {
       const strid = e.popup && e.popup._strid;
       const str = strid && byStrId[strid].str;
       const charter = str && byStrId[strid].charter;
@@ -131,7 +131,7 @@ function setupLLMap(
         charter.activateChart();
       }
     });
-    map.on('popupclose', function(e) {
+    map.on('popupclose', function (e) {
       const strid = e.popup && e.popup._strid;
       const str = strid && byStrId[strid].str;
       //console.debug("popupclose: str=", str);
@@ -140,7 +140,7 @@ function setupLLMap(
         //console.debug("popupclose: charter=", charter);
         charter.deactivateChart();
       }
-      setTimeout(function() {
+      setTimeout(function () {
         //vm.hoveredPoint = {};
         addSelectionPoint();
       });
@@ -148,8 +148,8 @@ function setupLLMap(
 
     map.on('click', function (e) {
       const shiftKey = e.originalEvent.shiftKey
-      const altKey   = e.originalEvent.altKey
-      const metaKey  = e.originalEvent.metaKey
+      const altKey = e.originalEvent.altKey
+      const metaKey = e.originalEvent.metaKey
 
       if (debug) console.debug("MAP CLICK: e=", e
         ,"latlng=",   e.latlng
@@ -159,11 +159,11 @@ function setupLLMap(
       );
 
       clickHandler({
-        lat:       e.latlng.lat,
-        lon:       e.latlng.lng,
-        shiftKey:  shiftKey,
-        altKey:    altKey,
-        metaKey:   metaKey
+        lat: e.latlng.lat,
+        lon: e.latlng.lng,
+        shiftKey: shiftKey,
+        altKey: altKey,
+        metaKey: metaKey
       });
     });
   }
@@ -171,7 +171,7 @@ function setupLLMap(
   function markerCreator(geojson, mapStyle) {
     // console.debug(":::::: markerCreator: mapStyle=", cloneDeep(mapStyle))
     // console.debug(":::::: markerCreator: geojson=", geojson)
-    return function() {
+    return function () {
       return L.geoJSON(geojson, {
         style: mapStyle,
         pointToLayer: function (feature, latlng) {
@@ -208,7 +208,7 @@ function setupLLMap(
 
     markersLayer.clearLayers();
     markersLayerMG.clearLayers();
-    each(overlayGroupByStreamId, function(group) {
+    each(overlayGroupByStreamId, function (group) {
       controlLayers.removeLayer(group);
       map.removeLayer(group);
     });
@@ -237,7 +237,7 @@ function setupLLMap(
     }
 
     byStrId[str.strid] = {
-      str:      str,
+      str: str,
       geoJsons: {}
     };
   }
@@ -255,8 +255,8 @@ function setupLLMap(
     }
 
     const variable = {
-      name:       vd.name,
-      units:      vd.units,
+      name: vd.name,
+      units: vd.units,
       chartStyle: vd.chartStyle
     };
 
@@ -326,7 +326,7 @@ function setupLLMap(
 
     // TODO review flags for this
     const useChartPopup = !!str.chartStyle
-    // const useChartPopup = str.chartStyle && str.chartStyle.useChartPopup;
+    // const useChartPopup = str.chartStyle && str.chartStyle.useChartPopup === true
 
     if (useChartPopup) {
       if (byStrId[str.strid].popupInfo) return;
@@ -342,7 +342,7 @@ function setupLLMap(
     }
 
     if (useChartPopup) {
-      console.warn("setting popup for stream ", str.strid);
+      console.warn('setting popup for stream ', str.strid);
       console.warn(`setting popup chartId=${chartId}`);
 
       const chartHeightStr = getSizeStr(str.chartHeightPx);
@@ -365,22 +365,28 @@ function setupLLMap(
     }
 
     else {
+      console.warn('setting absolute chart for stream', str.strid)
+      console.warn(`setting absolute chart chartId=${chartId}`)
+
       byStrId[str.strid].absChartUsed = true;
-      byStrId[str.strid].marker.on('click', function (e) {
+      byStrId[str.strid].marker.on('click', e => {
 
         const idElm = document.getElementById(chartId)
         console.debug("CLICK: idElm=", idElm, " visible=", idElm && idElm.is(":visible"));
-        // TODO handle the $ stuff
-        // idElm.stop();
-        // if (idElm.is(":visible")) {
-        //   idElm.fadeOut(700);
-        //   setTimeout(charter.deactivateChart, 700);
+
+        // const display = idElm.style.getPropertyValue('display')
+        // const visible = 'visible' === display
+        // console.debug('CLICK:', 'display=', display, 'visible=', visible, 'hidden=', idElm.hidden, 'idElm=', idElm)
+        //
+        // if (visible) {
+        //   idElm.style.setProperty('display', 'hidden')
+        //   setTimeout(charter.deactivateChart, 700)
         // }
         // else {
-        //   charter.activateChart();
-        //   idElm.fadeIn('fast');
+        //   idElm.style.setProperty('display', 'visible')
+        //   setTimeout(charter.activateChart, 700)
         // }
-      });
+      })
 
       // TODO handle the $ stuff
       // $(document).keyup(function (e) {
@@ -395,14 +401,14 @@ function setupLLMap(
   }
 
   function createCharter(str) {
-    return Charter(str, function(point) {
+    return Charter(str, function (point) {
       if (point && point.x) {
         const isoTime = moment.utc(point.x).format();
         //console.debug("hovered point=", point, isoTime);
         hoveredPoint({
-          strid:   str.strid,
-          x:       point.x,
-          y:       point.y,
+          strid: str.strid,
+          x: point.x,
+          y: point.y,
           isoTime: isoTime
         });
       }
@@ -460,8 +466,6 @@ function setupLLMap(
   }
 
   prepareAdjustMapUponWindowResize(mapid, map)
-
-
 
 
   return {

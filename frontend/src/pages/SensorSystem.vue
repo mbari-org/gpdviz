@@ -8,7 +8,7 @@ import SysActivity from 'components/SysActivity.vue'
 import GpdvizMap from 'components/GpdvizMap.vue'
 import Websocket from 'components/Websocket.vue'
 import { ClickEvent, LLMap } from 'src/map/LLMap'
-import { VModel } from 'components/VModel'
+import { ChartDiv, VModel } from 'components/VModel'
 import axios from 'axios'
 
 const route = useRoute()
@@ -16,12 +16,14 @@ const sysid: string = route.params.sysid
 
 const system = ref<ISensorSystem | null>(null)
 
+const absoluteCharts = ref<ChartDiv[]>([])
+
 let llmap: LLMap | null = null
 let vm: VModel | null = null
 
 // TODO test
 function clickListener(clickEvent: ClickEvent) {
-  console.debug('clickListener: clickEvent=', clickEvent)
+  // console.debug('clickListener: clickEvent=', clickEvent)
   const ss = system.value
   if (!ss || !ss.clickListener) {
     return
@@ -45,10 +47,10 @@ function clickListener(clickEvent: ClickEvent) {
 
 function gotLLMap(_llmap: LLMap) {
   llmap = _llmap
-  console.debug('gotLLMap: llmap=', llmap)
+  // console.debug('gotLLMap: llmap=', llmap)
 
   if (system.value) {
-    vm = new VModel(sysid, system, llmap)
+    vm = new VModel(sysid, system, absoluteCharts, llmap)
     llmap.setClickListener(clickListener)
 
     vm.refreshSystem()
@@ -95,7 +97,11 @@ onMounted(async () => {
       <tbody>
         <tr v-if="system">
           <td style="vertical-align: top">
-            <GpdvizMap :system="system" @gotLLMap="gotLLMap" />
+            <GpdvizMap
+              :system="system"
+              :absoluteCharts="absoluteCharts"
+              @gotLLMap="gotLLMap"
+            />
           </td>
           <td style="width: 300px; vertical-align: top">
             <SysActivity :system="system" />

@@ -1,27 +1,32 @@
 import { LLMap } from 'src/map/LLMap'
 import {
-  ISensorSystem,
   IDataStream,
-  IObsData,
-  Notif,
-  JsonValue,
   ILatLon,
+  IObsData,
+  ISensorSystem,
   IVmDataStream,
-  IVmVariableDef,
   IVmObsData,
+  IVmVariableDef,
+  JsonValue,
+  Notif,
 } from 'components/genmodel'
 
 import { positionsByTime } from 'src/map/PositionsByTime'
 
-// import {Ref, ref} from 'vue'
-
 import each from 'lodash/each'
 import keys from 'lodash/keys'
-import cloneDeep from 'lodash/cloneDeep'
 import sortBy from 'lodash/sortBy'
 import { Ref } from 'vue'
 
 const debug = /.*debug=.*\bdebug\b.*/.exec(window.location.search)
+
+export class ChartDiv {
+  constructor(
+    public id: string,
+    public heightStr: string,
+    public minWidthStr: string
+  ) {}
+}
 
 // ss: Ref<ISensorSystem> in the type and
 // this.ss = ref<ISensorSystem>({sysid, pushEvents: true, streams: {}})
@@ -31,15 +36,20 @@ const debug = /.*debug=.*\bdebug\b.*/.exec(window.location.search)
 export class VModel {
   sysid: string
   llmap: LLMap
-  // ss: Ref<ISensorSystem>
   ss: Ref<ISensorSystem | null>
 
-  constructor(sysid: string, ss: Ref<ISensorSystem | null>, llmap: LLMap) {
+  absoluteCharts: Ref<ChartDiv[]>
+
+  constructor(
+    sysid: string,
+    ss: Ref<ISensorSystem | null>,
+    absoluteCharts: Ref<ChartDiv[]>,
+    llmap: LLMap
+  ) {
     this.sysid = sysid
-    this.llmap = llmap
-    // this.ss = ref<ISensorSystem>({sysid, pushEvents: true, streams: {}})
-    // this.ss = { sysid, pushEvents: true, streams: {} }
     this.ss = ss
+    this.absoluteCharts = absoluteCharts
+    this.llmap = llmap
     console.debug(`constructed VModel: sysid='${sysid}'`)
   }
 
@@ -85,21 +95,61 @@ export class VModel {
     }
   }
 
-  // TODO addAbsoluteChartIfSo
   addAbsoluteChartIfSo(strid: string, chartStyle?: JsonValue) {
     if (debug)
-      console.debug(
-        'addAbsoluteChartIfSo: strid=',
-        strid,
-        'chartStyle=',
-        chartStyle
-      )
+    console.debug(
+      'addAbsoluteChartIfSo: strid=',
+      strid,
+      'chartStyle=',
+      chartStyle
+    )
+    // if (strid !== 'boundary_polygon') return
+    //
+    //
+    // let obj: { [member: string]: JsonValue } | null = null
+    //
+    // let useChartPopup = false
+    // if (chartStyle) {
+    //   obj = chartStyle as { [member: string]: JsonValue }
+    //   useChartPopup = obj['useChartPopup'] === true
+    // }
+    //
+    // console.debug('useChartPopup=', useChartPopup)
+    // if (useChartPopup) {
+    //   return
+    // }
+    //
+    // let chartHeightStr = '270px'
+    // let minWidthStr = '500px'
+    // if (obj) {
+    //   const getValueStr = (name: string, defaultValue: string) => {
+    //     const value = obj && obj[name]
+    //     if (typeof value === 'string') {
+    //       return value
+    //     } else if (typeof value === 'number') {
+    //       return `${value}px`
+    //     } else {
+    //       return defaultValue
+    //     }
+    //   }
+    //   chartHeightStr = getValueStr('height', chartHeightStr)
+    //   minWidthStr = getValueStr('minWidth', minWidthStr)
+    // }
+    //
+    // const chartId = 'chart-container-' + strid
+    // this.absoluteCharts.value.push(
+    //   new ChartDiv(chartId, chartHeightStr, minWidthStr)
+    // )
+    //
+    // console.debug(
+    //   `strid=${strid} chartHeightStr=${chartHeightStr} minWidthStr=${minWidthStr}`
+    // )
   }
 
   addStreamToMap(str: IDataStream) {
     // TODO remove selective logging
-    if (str.strid === 'boundary_polygon')
-      console.debug('addStreamToMap: str=', cloneDeep(str))
+    // if (str.strid === 'boundary_polygon')
+    //   console.debug('addStreamToMap: str=', cloneDeep(str))
     this.llmap.addDataStream(str)
   }
 
@@ -109,8 +159,8 @@ export class VModel {
     str: IDataStream | undefined = undefined
   ) {
     // TODO remove selective logging
-    if (strid === 'boundary_polygon')
-      console.debug('addObservationsToMap:', 'obsMap=', cloneDeep(obsMap))
+    // if (strid === 'boundary_polygon')
+    //   console.debug('addObservationsToMap:', 'obsMap=', cloneDeep(obsMap))
 
     const sortedTimeIsos = sortBy(keys(obsMap))
 
@@ -153,7 +203,7 @@ export class VModel {
   refreshSystem() {
     if (!this.ss.value) return
     const vss: ISensorSystem = this.ss.value
-    console.debug('refreshSystem: vss=', vss)
+    // console.debug('refreshSystem: vss=', vss)
 
     if (vss.center) {
       const c = [vss.center.lat, vss.center.lon]
@@ -203,7 +253,7 @@ export class VModel {
     if (!ss) return
 
     ss.streams[str.strid] = str
-    // TODO addAbsoluteChartIfSo(str.strid, str.chartStyle)
+    this.addAbsoluteChartIfSo(str.strid, str.chartStyle)
     this.addStreamToMap(str)
   }
 
