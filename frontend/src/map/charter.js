@@ -82,10 +82,10 @@ export default function Charter(str, hoveredPoint, mouseOutside) {
   })()
 
   return {
-    strid: strid,
-    addChartPoint: addChartPoint,
-    activateChart: activateChart,
-    deactivateChart: deactivateChart
+    strid,
+    addChartPoint,
+    activateChart,
+    deactivateChart
   }
 
   function addChartPoint(seriesIndex, timeMs, y) {

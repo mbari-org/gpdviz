@@ -369,21 +369,20 @@ function setupLLMap(
       console.warn(`setting absolute chart chartId=${chartId}`)
 
       byStrId[str.strid].absChartUsed = true;
-      byStrId[str.strid].marker.on('click', e => {
-
-        const idElm = document.getElementById(chartId)
-        console.debug("CLICK: idElm=", idElm, " visible=", idElm && idElm.is(":visible"));
-
-        // const display = idElm.style.getPropertyValue('display')
-        // const visible = 'visible' === display
-        // console.debug('CLICK:', 'display=', display, 'visible=', visible, 'hidden=', idElm.hidden, 'idElm=', idElm)
+      byStrId[str.strid].marker.on('click', () => {
+        // TODO
+        // const idElm = document.getElementById(chartId)
+        // console.debug('CLICK:', 'idElm=', idElm)
+        //
+        // const visible = 'visible' === idElm.style.visibility
+        // console.debug('CLICK:', 'visible=', visible, 'hidden=', idElm.hidden)
         //
         // if (visible) {
-        //   idElm.style.setProperty('display', 'hidden')
+        //   idElm.style.visibility = 'hidden'
         //   setTimeout(charter.deactivateChart, 700)
         // }
         // else {
-        //   idElm.style.setProperty('display', 'visible')
+        //   idElm.style.visibility = 'visible'
         //   setTimeout(charter.activateChart, 700)
         // }
       })

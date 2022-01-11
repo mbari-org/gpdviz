@@ -2,6 +2,7 @@
 
 2022-01
 
+- todo: dispatch chart in absolute position
 - preps for async notifications
 - initial chart display.
   Testing with http://localhost:8080/#/ss1
