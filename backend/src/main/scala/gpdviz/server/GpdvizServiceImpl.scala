@@ -5,7 +5,7 @@ import java.time.format.DateTimeParseException
 
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model._
-import com.typesafe.scalalogging.{LazyLogging => Logging}
+import scribe.Logging
 import gpdviz.async.Notifier
 import gpdviz.data.DbInterface
 import gpdviz.model.{DataStream, SensorSystem, VariableDef}

@@ -2,7 +2,7 @@ package gpdviz.data
 
 import java.util.concurrent.TimeUnit
 import com.typesafe.config.ConfigFactory
-import com.typesafe.scalalogging.{LazyLogging => Logging}
+import scribe.Logging
 import gpdviz.config
 
 import scala.concurrent.{Await, ExecutionContext}
