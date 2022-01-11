@@ -64,3 +64,12 @@ onMounted(() => {
   height: 400px !important;
 }
 </style>
+
+<style>
+.llPopupAbsolute {
+  position: absolute;
+  left: 0 !important;
+  top: 0 !important;
+  transform: none !important;
+}
+</style>

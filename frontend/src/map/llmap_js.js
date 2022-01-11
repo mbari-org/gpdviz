@@ -126,7 +126,7 @@ function setupLLMap(
       const strid = e.popup && e.popup._strid;
       const str = strid && byStrId[strid].str;
       const charter = str && byStrId[strid].charter;
-      console.warn("popupopen: str=", str, "has-charter=", !!charter);
+      // console.warn("popupopen: str=", str, "has-charter=", !!charter);
       if (charter) {
         charter.activateChart();
       }
@@ -166,6 +166,8 @@ function setupLLMap(
         metaKey: metaKey
       });
     });
+
+    L.control.scale({imperial: false}).addTo(map)
   }
 
   function markerCreator(geojson, mapStyle) {
@@ -305,7 +307,7 @@ function setupLLMap(
     }
     let charter = byStrId[strid].charter;
     if (!charter) {
-      console.log("addObsScalarData: creating charter for strid=", strid);
+      // console.log("addObsScalarData: creating charter for strid=", strid);
       charter = byStrId[strid].charter = createCharter(str);
     }
 
@@ -324,14 +326,17 @@ function setupLLMap(
     }
     const chartId = "chart-container-" + str.strid;
 
-    // TODO review flags for this
-    const useChartPopup = !!str.chartStyle
-    // const useChartPopup = str.chartStyle && str.chartStyle.useChartPopup === true
-
-    if (useChartPopup) {
-      if (byStrId[str.strid].popupInfo) return;
+    if (byStrId[str.strid].popupInfo) {
+      // already set up.
+      return
     }
-    else if (byStrId[str.strid].absChartUsed) return;
+
+    const useChartPopup = str.chartStyle && str.chartStyle.useChartPopup === true
+
+    let popupClass = ''
+    if (!useChartPopup) {
+      popupClass = 'llPopupAbsolute'
+    }
 
     if (str.chartHeightPx === undefined) {
       str.chartHeightPx = 370;
@@ -341,62 +346,24 @@ function setupLLMap(
       //console.debug(str.strid, "str.chartHeightPx=", str.chartHeightPx);
     }
 
-    if (useChartPopup) {
-      console.warn('setting popup for stream ', str.strid);
-      console.warn(`setting popup chartId=${chartId}`);
+    // console.warn(`setting popup for stream=${str.strid} chartId=${chartId}`)
 
-      const chartHeightStr = getSizeStr(str.chartHeightPx);
-      const minWidthPx = str.chartStyle && str.chartStyle.minWidthPx || 500;
-      const minWidthStr = minWidthPx + 'px';
+    const chartHeightStr = getSizeStr(str.chartHeightPx);
+    const minWidthPx = str.chartStyle && str.chartStyle.minWidthPx || 500;
+    const minWidthStr = minWidthPx + 'px';
 
-      const chartContainer = '<div id="' + chartId +
-        '" style="min-width:' + minWidthStr + ';height:' + chartHeightStr + ';margin:0 auto"></div>';
+    const chartContainer = '<div id="' + chartId +
+      '" style="min-width:' + minWidthStr + ';height:' + chartHeightStr + ';margin:0 auto"></div>';
 
-      const popupInfo = L.popup({
-        //autoClose: false, closeOnClick: false
-        minWidth: minWidthPx + 50
-      });
-      popupInfo._strid = str.strid;
+    const popupInfo = L.popup({
+      className: popupClass,
+      minWidth: minWidthPx + 50
+    });
+    popupInfo._strid = str.strid
+    popupInfo.setContent(chartContainer)
 
-      popupInfo.setContent(chartContainer);
-
-      byStrId[str.strid].marker.bindPopup(popupInfo);
-      byStrId[str.strid].popupInfo = popupInfo;
-    }
-
-    else {
-      console.warn('setting absolute chart for stream', str.strid)
-      console.warn(`setting absolute chart chartId=${chartId}`)
-
-      byStrId[str.strid].absChartUsed = true;
-      byStrId[str.strid].marker.on('click', () => {
-        // TODO
-        // const idElm = document.getElementById(chartId)
-        // console.debug('CLICK:', 'idElm=', idElm)
-        //
-        // const visible = 'visible' === idElm.style.visibility
-        // console.debug('CLICK:', 'visible=', visible, 'hidden=', idElm.hidden)
-        //
-        // if (visible) {
-        //   idElm.style.visibility = 'hidden'
-        //   setTimeout(charter.deactivateChart, 700)
-        // }
-        // else {
-        //   idElm.style.visibility = 'visible'
-        //   setTimeout(charter.activateChart, 700)
-        // }
-      })
-
-      // TODO handle the $ stuff
-      // $(document).keyup(function (e) {
-      //   if (e.keyCode === 27) {
-      //     const idElm = $("#" + chartId);
-      //     //console.debug("ESC: idElm=", idElm);
-      //     idElm.fadeOut(700);
-      //     setTimeout(charter.deactivateChart, 700);
-      //   }
-      // });
-    }
+    byStrId[str.strid].marker.bindPopup(popupInfo);
+    byStrId[str.strid].popupInfo = popupInfo;
   }
 
   function createCharter(str) {

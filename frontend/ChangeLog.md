@@ -2,7 +2,10 @@
 
 2022-01
 
-- todo: dispatch chart in absolute position
+- ad hoc dispatch of chart popup positioning
+  (typical popup or with an "absolute" position)
+  via className option in the L.popup call.
+  TODO expose event and instead use a quasar dialog
 - preps for async notifications
 - initial chart display.
   Testing with http://localhost:8080/#/ss1
