@@ -5,8 +5,7 @@ import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{Materializer, OverflowStrategy}
 import gpdviz._
 
-class WebSocketPublisher()(implicit materializer: Materializer)
-  extends GpdvizPublisher {
+class WebSocketPublisher()(implicit materializer: Materializer) extends GpdvizPublisher {
 
   def details: String = "WebSockets"
 
@@ -31,7 +30,7 @@ class WebSocketPublisher()(implicit materializer: Materializer)
         //   println(s"notif=$notif")
         //   notif
         // })
-        .map(notif => TextMessage.Strict(notif.toJsonString))
+        .map(notif => TextMessage.Strict(notif.toJsonString)),
     )
   }
 }

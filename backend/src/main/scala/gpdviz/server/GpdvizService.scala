@@ -43,18 +43,24 @@ trait SsService extends GpdvizServiceImpl with Directives {
   @POST
   @Consumes(Array(MediaType.APPLICATION_JSON))
   @Produces(Array(MediaType.APPLICATION_JSON))
-  @Operation(summary = "Register sensor system", description = "Register sensor system",
+  @Operation(
+    summary = "Register sensor system",
+    description = "Register sensor system",
     operationId = "registerSystem",
     tags = Array("sensor system"),
-    requestBody = new RequestBody(required = true,
-      content = Array(new Content(schema = new Schema(implementation = classOf[SensorSystemAdd])))),
+    requestBody = new RequestBody(
+      required = true,
+      content = Array(new Content(schema = new Schema(implementation = classOf[SensorSystemAdd]))),
+    ),
     responses = Array(
-      new ApiResponse(responseCode = "201",
-        content = Array(new Content(schema = new Schema(implementation = classOf[SensorSystemSummary])))
+      new ApiResponse(
+        responseCode = "201",
+        content =
+          Array(new Content(schema = new Schema(implementation = classOf[SensorSystemSummary]))),
       ),
       new ApiResponse(responseCode = "400", description = "Bad Request"),
       new ApiResponse(responseCode = "409", description = "Sensor system already registered"),
-    )
+    ),
   )
   def ssAdd: Route = path("api" / "ss") {
     (post & entity(as[SensorSystemAdd])) { ssr =>
@@ -66,13 +72,20 @@ trait SsService extends GpdvizServiceImpl with Directives {
 
   @GET
   @Produces(Array(MediaType.APPLICATION_JSON))
-  @Operation(summary = "List all registered sensor systems", description = "List all registered sensor systems",
+  @Operation(
+    summary = "List all registered sensor systems",
+    description = "List all registered sensor systems",
     operationId = "listSystems",
     tags = Array("sensor system"),
     responses = Array(
-      new ApiResponse(responseCode = "201", description = "Echo Enum",
-        content = Array(new Content(schema = new Schema(implementation = classOf[Array[SensorSystemSummary]])))),
-    )
+      new ApiResponse(
+        responseCode = "201",
+        description = "Echo Enum",
+        content = Array(
+          new Content(schema = new Schema(implementation = classOf[Array[SensorSystemSummary]])),
+        ),
+      ),
+    ),
   )
   def ssList: Route = path("api" / "ss") {
     cors() {
@@ -99,21 +112,27 @@ trait OneSsService extends GpdvizServiceImpl with Directives {
   @POST
   @Consumes(Array(MediaType.APPLICATION_JSON))
   @Produces(Array(MediaType.APPLICATION_JSON))
-  @Operation(summary = "Add a data stream", description = "Add a data stream",
+  @Operation(
+    summary = "Add a data stream",
+    description = "Add a data stream",
     operationId = "registerStream",
     tags = Array("sensor system", "data stream"),
-    parameters = Array(new Parameter(
-      name = "sysid",
-      description = "sensor system id",
-      in = ParameterIn.PATH,
+    parameters = Array(
+      new Parameter(
+        name = "sysid",
+        description = "sensor system id",
+        in = ParameterIn.PATH,
+        required = true,
+        schema = new Schema(implementation = classOf[String]),
+      ),
+    ),
+    requestBody = new RequestBody(
       required = true,
-      schema = new Schema(implementation = classOf[String]),
-    )),
-    requestBody = new RequestBody(required = true,
-      content = Array(new Content(schema = new Schema(implementation = classOf[DataStreamAdd])))),
+      content = Array(new Content(schema = new Schema(implementation = classOf[DataStreamAdd]))),
+    ),
     responses = Array(
       new ApiResponse(responseCode = "404", description = "Undefined sensor system"),
-    )
+    ),
   )
   def strAdd: Route = pathPrefix("api" / "ss" / Segment) { sysid =>
     (post & entity(as[DataStreamAdd])) { strr =>
@@ -126,22 +145,27 @@ trait OneSsService extends GpdvizServiceImpl with Directives {
   @Path("/{sysid}")
   @GET
   @Produces(Array(MediaType.APPLICATION_JSON))
-  @Operation(summary = "Get a sensor system", description = "Get a sensor system",
+  @Operation(
+    summary = "Get a sensor system",
+    description = "Get a sensor system",
     operationId = "getSystem",
     tags = Array("sensor system"),
-    parameters = Array(new Parameter(
-      name = "sysid",
-      description = "sensor system id",
-      in = ParameterIn.PATH,
-      required = true,
-      schema = new Schema(implementation = classOf[String]),
-    )),
+    parameters = Array(
+      new Parameter(
+        name = "sysid",
+        description = "sensor system id",
+        in = ParameterIn.PATH,
+        required = true,
+        schema = new Schema(implementation = classOf[String]),
+      ),
+    ),
     responses = Array(
-      new ApiResponse(responseCode = "202",
-        content = Array(new Content(schema = new Schema(implementation = classOf[SensorSystem])))
+      new ApiResponse(
+        responseCode = "202",
+        content = Array(new Content(schema = new Schema(implementation = classOf[SensorSystem]))),
       ),
       new ApiResponse(responseCode = "404", description = "Undefined sensor system"),
-    )
+    ),
   )
   def ssGet: Route = pathPrefix("api" / "ss" / Segment) { sysid =>
     cors() {
@@ -159,25 +183,34 @@ trait OneSsService extends GpdvizServiceImpl with Directives {
   @PUT
   @Consumes(Array(MediaType.APPLICATION_JSON))
   @Produces(Array(MediaType.APPLICATION_JSON))
-  @Operation(summary = "Update a sensor system", description = "Update a sensor system",
+  @Operation(
+    summary = "Update a sensor system",
+    description = "Update a sensor system",
     operationId = "updateSystem",
     tags = Array("sensor system"),
-    parameters = Array(new Parameter(
-      name = "sysid",
-      description = "sensor system id",
-      in = ParameterIn.PATH,
+    parameters = Array(
+      new Parameter(
+        name = "sysid",
+        description = "sensor system id",
+        in = ParameterIn.PATH,
+        required = true,
+        schema = new Schema(implementation = classOf[String]),
+      ),
+    ),
+    requestBody = new RequestBody(
       required = true,
-      schema = new Schema(implementation = classOf[String]),
-    )),
-    requestBody = new RequestBody(required = true,
       description = "Properties to update. All elements are optional.",
-      content = Array(new Content(schema = new Schema(implementation = classOf[SensorSystemUpdate])))),
+      content =
+        Array(new Content(schema = new Schema(implementation = classOf[SensorSystemUpdate]))),
+    ),
     responses = Array(
-      new ApiResponse(responseCode = "201",
-        content = Array(new Content(schema = new Schema(implementation = classOf[SensorSystemSummary])))
+      new ApiResponse(
+        responseCode = "201",
+        content =
+          Array(new Content(schema = new Schema(implementation = classOf[SensorSystemSummary]))),
       ),
       new ApiResponse(responseCode = "404", description = "Undefined sensor system"),
-    )
+    ),
   )
   def ssUpdate: Route = pathPrefix("api" / "ss" / Segment) { sysid =>
     (put & entity(as[SensorSystemUpdate])) { ssu =>
@@ -190,23 +223,28 @@ trait OneSsService extends GpdvizServiceImpl with Directives {
   @Path("/{sysid}")
   @DELETE
   @Produces(Array(MediaType.APPLICATION_JSON))
-  @Operation(summary = "Unregister a sensor system",
+  @Operation(
+    summary = "Unregister a sensor system",
     description = "Unregister a sensor system",
     operationId = "deleteSystem",
     tags = Array("sensor system"),
-    parameters = Array(new Parameter(
-      name = "sysid",
-      description = "sensor system id",
-      in = ParameterIn.PATH,
-      required = true,
-      schema = new Schema(implementation = classOf[String]),
-    )),
+    parameters = Array(
+      new Parameter(
+        name = "sysid",
+        description = "sensor system id",
+        in = ParameterIn.PATH,
+        required = true,
+        schema = new Schema(implementation = classOf[String]),
+      ),
+    ),
     responses = Array(
-      new ApiResponse(responseCode = "201",
-        content = Array(new Content(schema = new Schema(implementation = classOf[SensorSystemSummary])))
+      new ApiResponse(
+        responseCode = "201",
+        content =
+          Array(new Content(schema = new Schema(implementation = classOf[SensorSystemSummary]))),
       ),
       new ApiResponse(responseCode = "404", description = "Undefined sensor system"),
-    )
+    ),
   )
   def ssDelete: Route = pathPrefix("api" / "ss" / Segment) { sysid =>
     delete {
@@ -228,7 +266,8 @@ trait OneStrService extends GpdvizServiceImpl with Directives {
   @Path("/{sysid}/{strid}")
   @GET
   @Produces(Array(MediaType.APPLICATION_JSON))
-  @Operation(summary = "Get a data stream",
+  @Operation(
+    summary = "Get a data stream",
     description = "Get a data stream",
     operationId = "getStream",
     tags = Array("data stream"),
@@ -249,11 +288,12 @@ trait OneStrService extends GpdvizServiceImpl with Directives {
       ),
     ),
     responses = Array(
-      new ApiResponse(responseCode = "202",
-        content = Array(new Content(schema = new Schema(implementation = classOf[DataStream])))
+      new ApiResponse(
+        responseCode = "202",
+        content = Array(new Content(schema = new Schema(implementation = classOf[DataStream]))),
       ),
       new ApiResponse(responseCode = "404", description = "Undefined sensor system or data stream"),
-    )
+    ),
   )
   def strGet: Route = {
     pathPrefix("api" / "ss" / Segment / Segment) { case (sysid, strid) =>
@@ -294,11 +334,13 @@ trait OneStrService extends GpdvizServiceImpl with Directives {
       ),
     ),
     responses = Array(
-      new ApiResponse(responseCode = "201",
-        content = Array(new Content(schema = new Schema(implementation = classOf[DataStreamSummary])))
+      new ApiResponse(
+        responseCode = "201",
+        content =
+          Array(new Content(schema = new Schema(implementation = classOf[DataStreamSummary]))),
       ),
       new ApiResponse(responseCode = "404", description = "Undefined sensor system or data stream"),
-    )
+    ),
   )
   def strDelete: Route = {
     pathPrefix("api" / "ss" / Segment / Segment) { case (sysid, strid) =>
@@ -344,14 +386,18 @@ trait VariableDefService extends GpdvizServiceImpl with Directives {
         schema = new Schema(implementation = classOf[String]),
       ),
     ),
-    requestBody = new RequestBody(required = true,
-      content = Array(new Content(schema = new Schema(implementation = classOf[VariableDef])))),
+    requestBody = new RequestBody(
+      required = true,
+      content = Array(new Content(schema = new Schema(implementation = classOf[VariableDef]))),
+    ),
     responses = Array(
-      new ApiResponse(responseCode = "201",
-        content = Array(new Content(schema = new Schema(implementation = classOf[VariableDefSummary])))
+      new ApiResponse(
+        responseCode = "201",
+        content =
+          Array(new Content(schema = new Schema(implementation = classOf[VariableDefSummary]))),
       ),
       new ApiResponse(responseCode = "404", description = "Undefined sensor system or data stream"),
-    )
+    ),
   )
   def vdAdd: Route = {
     pathPrefix("api" / "ss" / Segment / Segment / "vd") { case (sysid, strid) =>
@@ -397,15 +443,19 @@ trait ObsService extends GpdvizServiceImpl with Directives {
         schema = new Schema(implementation = classOf[String]),
       ),
     ),
-    requestBody = new RequestBody(required = true,
-      content = Array(new Content(schema = new Schema(implementation = classOf[ObservationsAdd])))),
+    requestBody = new RequestBody(
+      required = true,
+      content = Array(new Content(schema = new Schema(implementation = classOf[ObservationsAdd]))),
+    ),
     responses = Array(
-      new ApiResponse(responseCode = "201",
-        content = Array(new Content(schema = new Schema(implementation = classOf[ObservationsSummary])))
+      new ApiResponse(
+        responseCode = "201",
+        content =
+          Array(new Content(schema = new Schema(implementation = classOf[ObservationsSummary]))),
       ),
       new ApiResponse(responseCode = "404", description = "Undefined sensor system or data stream"),
       new ApiResponse(responseCode = "400", description = "Malformed ISO-8601 timestamp"),
-    )
+    ),
   )
   def obsAdd: Route = {
     pathPrefix("api" / "ss" / Segment / Segment / "obs") { case (sysid, strid) =>
