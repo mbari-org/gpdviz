@@ -7,8 +7,8 @@ declare module '@vue/runtime-core' {
   }
 }
 
-const baseName = 'tsauv.shore.mbari.org/gpdviz'
-// const baseName = 'localhost:5050'
+// const baseName = 'tsauv.shore.mbari.org/gpdviz'
+const baseName = 'localhost:5050'
 
 const baseURL = `http://${baseName}/api`
 const wsBaseUri = `ws://${baseName}/ws`

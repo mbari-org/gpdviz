@@ -9,7 +9,7 @@ import spray.json._
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext
 
-class Notifier(db: DbInterface, pub: Publisher)(implicit ec: ExecutionContext)
+class Notifier(db: DbInterface, pub: GpdvizPublisher)(implicit ec: ExecutionContext)
     extends GpdvizJsonImplicits {
 
   def notifySensorSystemAdded(ss: SensorSystem): Unit = if (ss.pushEvents) {
@@ -100,7 +100,7 @@ class Notifier(db: DbInterface, pub: Publisher)(implicit ec: ExecutionContext)
           ObservationsAdded(
             sysid = sysid,
             strid = strid,
-            obss = slice,
+            obss = slice.toMap,
           ),
         )
         rec(next)

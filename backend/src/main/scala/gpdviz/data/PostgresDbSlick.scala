@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 import com.cloudera.science.geojson.Feature
 import com.esri.core.geometry.Geometry
 import com.typesafe.config.Config
-import com.typesafe.scalalogging.{LazyLogging => Logging}
+import scribe.Logging
 import gpdviz.data.MyPostgresProfile.api._
 import gpdviz.model._
 import gpdviz.server.{GnError, GnErrorF, SensorSystemUpdate}
@@ -346,7 +346,7 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
   private def observation2model(seq: Seq[PgObservation]): Map[String, List[ObsData]] = {
     val byTime = seq.groupBy(_.time)
     byTime.map { case (time, obss) =>
-      time.format(DateTimeFormatter.ISO_INSTANT) → (obss map { obs =>
+      time.format(DateTimeFormatter.ISO_INSTANT) -> (obss map { obs =>
         ObsData(
           feature = obs.feature,
           geometry = obs.geometry,

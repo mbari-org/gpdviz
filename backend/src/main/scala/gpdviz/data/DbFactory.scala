@@ -2,7 +2,7 @@ package gpdviz.data
 
 import java.util.concurrent.TimeUnit
 import com.typesafe.config.ConfigFactory
-import com.typesafe.scalalogging.{LazyLogging => Logging}
+import scribe.Logging
 import gpdviz.config
 
 import scala.concurrent.{Await, ExecutionContext}
@@ -73,7 +73,7 @@ class DbFactory(implicit ec: ExecutionContext) extends Logging {
       center = Some(LatLon(36.785, -122.0)),
       clickListener = Some(s"http://clickListener/$sysid"),
       streams = Map(
-        strid1 → DataStream(
+        strid1 -> DataStream(
           strid = strid1,
           name = Some(s"str name of $strid1"),
           variables = Some(
@@ -90,7 +90,7 @@ class DbFactory(implicit ec: ExecutionContext) extends Logging {
           ),
           observations = Some(
             Map(
-              "2017-10-10T10:10:00Z" → List(
+              "2017-10-10T10:10:00Z" -> List(
                 ObsData(
                   scalarData = Some(
                     ScalarData(
@@ -110,7 +110,7 @@ class DbFactory(implicit ec: ExecutionContext) extends Logging {
                   ),
                 ),
               ),
-              "2017-10-10T10:10:02Z" → List(
+              "2017-10-10T10:10:02Z" -> List(
                 ObsData(
                   scalarData = Some(
                     ScalarData(
@@ -124,7 +124,7 @@ class DbFactory(implicit ec: ExecutionContext) extends Logging {
             ),
           ),
         ),
-        strid2 → DataStream(
+        strid2 -> DataStream(
           strid = strid2,
           name = Some(s"str name of $strid2"),
         ),

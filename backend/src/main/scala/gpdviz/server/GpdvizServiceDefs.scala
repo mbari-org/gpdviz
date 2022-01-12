@@ -3,10 +3,8 @@ package gpdviz.server
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.cloudera.science.geojson.GeoJsonProtocol
 import gpdviz.model._
-import io.swagger.annotations.ApiModelProperty
-import spray.json.{DefaultJsonProtocol, JsObject}
-
-import scala.annotation.meta.field
+import io.swagger.v3.oas.annotations.media.Schema
+import spray.json.{DefaultJsonProtocol, JsObject, RootJsonFormat}
 
 // generic error for now
 case class GnError(
@@ -51,7 +49,7 @@ case class SensorSystemAdd(
     sysid:       String,
     name:        Option[String] = None,
     description: Option[String] = None,
-    @(ApiModelProperty @field)(dataType = "boolean")
+    @Schema(required = false, implementation = classOf[Boolean])
     pushEvents:    Option[Boolean] = None,
     center:        Option[LatLon] = None,
     zoom:          Option[Int] = None,
@@ -68,35 +66,35 @@ case class DataStreamAdd(
     strid:       String,
     name:        Option[String] = None,
     description: Option[String] = None,
-    @(ApiModelProperty @field)(dataType = "object")
+    @Schema(required = false, implementation = classOf[JsObject])
     mapStyle:  Option[JsObject] = None,
     zOrder:    Option[Int] = None,
     variables: Option[List[VariableDef]] = None,
-    @(ApiModelProperty @field)(dataType = "object")
+    @Schema(required = false, implementation = classOf[JsObject])
     chartStyle: Option[JsObject] = None,
 )
 
 case class ObservationsAdd(observations: Map[String, List[ObsData]])
 
 trait GpdvizJsonImplicits extends DefaultJsonProtocol with SprayJsonSupport with GeoJsonProtocol {
-  implicit val _llFormat = jsonFormat2(LatLon)
+  implicit val _llFormat: RootJsonFormat[LatLon] = jsonFormat2(LatLon)
 
-  implicit val _sdFormat = jsonFormat3(ScalarData)
-  implicit val _odFormat = jsonFormat3(ObsData)
-  implicit val _oaFormat = jsonFormat1(ObservationsAdd)
-  implicit val _osFormat = jsonFormat5(ObservationsSummary)
+  implicit val _sdFormat: RootJsonFormat[ScalarData] = jsonFormat3(ScalarData)
+  implicit val _odFormat: RootJsonFormat[ObsData] = jsonFormat3(ObsData)
+  implicit val _oaFormat: RootJsonFormat[ObservationsAdd] = jsonFormat1(ObservationsAdd)
+  implicit val _osFormat: RootJsonFormat[ObservationsSummary] = jsonFormat5(ObservationsSummary)
 
-  implicit val _vdFormat = jsonFormat3(VariableDef)
-  implicit val _vdsFormat = jsonFormat4(VariableDefSummary)
+  implicit val _vdFormat: RootJsonFormat[VariableDef] = jsonFormat3(VariableDef)
+  implicit val _vdsFormat: RootJsonFormat[VariableDefSummary] = jsonFormat4(VariableDefSummary)
 
-  implicit val _dsAddFormat = jsonFormat7(DataStreamAdd)
-  implicit val _dssFormat = jsonFormat2(DataStreamSummary)
-  implicit val _dsFormat = jsonFormat8(DataStream)
+  implicit val _dsAddFormat: RootJsonFormat[DataStreamAdd] = jsonFormat7(DataStreamAdd)
+  implicit val _dssFormat: RootJsonFormat[DataStreamSummary] = jsonFormat2(DataStreamSummary)
+  implicit val _dsFormat: RootJsonFormat[DataStream] = jsonFormat8(DataStream)
 
-  implicit val _ssAddFormat = jsonFormat7(SensorSystemAdd)
-  implicit val _ssUpdFormat = jsonFormat3(SensorSystemUpdate)
-  implicit val _sssFormat = jsonFormat7(SensorSystemSummary)
-  implicit val _ssFormat = jsonFormat8(SensorSystem)
+  implicit val _ssAddFormat: RootJsonFormat[SensorSystemAdd] = jsonFormat7(SensorSystemAdd)
+  implicit val _ssUpdFormat: RootJsonFormat[SensorSystemUpdate] = jsonFormat3(SensorSystemUpdate)
+  implicit val _sssFormat: RootJsonFormat[SensorSystemSummary] = jsonFormat7(SensorSystemSummary)
+  implicit val _ssFormat: RootJsonFormat[SensorSystem] = jsonFormat8(SensorSystem)
 
-  implicit val _dbErrorFormat = jsonFormat6(GnError)
+  implicit val _dbErrorFormat: RootJsonFormat[GnError] = jsonFormat6(GnError)
 }

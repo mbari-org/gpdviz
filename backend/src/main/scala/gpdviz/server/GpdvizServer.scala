@@ -2,7 +2,7 @@ package gpdviz.server
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import gpdviz.async._
 import gpdviz.config.cfg
 import gpdviz.data.{DbFactory, DbInterface}
@@ -16,7 +16,7 @@ class GpdvizServer extends GpdvizService {
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val materializer: Materializer = Materializer.matFromSystem
 
   val (publisher, route) = {
     val wsp = new WebSocketPublisher
@@ -33,7 +33,10 @@ class GpdvizServer extends GpdvizService {
       s"Gpdviz ${gpdviz.BuildInfo.version} using: DB: ${db.details}  Async Notifications: ${publisher.details}",
     )
     db.createTables(ifNotExist = true)
-    val bindingFuture = Http().bindAndHandle(route, cfg.httpInterface, cfg.httpPort)
+
+    val bindingFuture = Http()
+      .newServerAt(cfg.httpInterface, cfg.httpPort)
+      .bindFlow(route)
     println(s"Gpdviz server '${cfg.serverName}' online at ${cfg.httpInterface}:${cfg.httpPort}/")
     if (keyToStop) {
       println("Press RETURN to stop...")
