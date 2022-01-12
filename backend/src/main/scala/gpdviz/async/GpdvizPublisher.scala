@@ -2,7 +2,7 @@ package gpdviz.async
 
 import gpdviz.Notif
 
-trait Publisher {
+trait GpdvizPublisher {
   def details: String
 
   def publish(notif: Notif): Unit

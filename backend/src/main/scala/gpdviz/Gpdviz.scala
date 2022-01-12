@@ -106,8 +106,8 @@ object Gpdviz {
                   instant,
                   ZoneOffset.of("-00:00"),
                 )
-                odt.format(DateTimeFormatter.ISO_INSTANT) → list
-              } else time → list
+                odt.format(DateTimeFormatter.ISO_INSTANT) -> list
+              } else time -> list
             }
           }
           ds.copy(observations = newObss)

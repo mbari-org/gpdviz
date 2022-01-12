@@ -1,60 +1,37 @@
 package gpdviz.async
 
-import akka.NotUsed
-import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.model.ws.TextMessage
-import akka.stream.Materializer
-import org.reactivestreams.{Publisher => RPublisher}
 import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.{Materializer, OverflowStrategy}
 import gpdviz._
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
-
-class WebSocketPublisher()(implicit
-    materializer:     Materializer,
-    executionContext: ExecutionContextExecutor,
-    system:           ActorSystem,
-) extends Publisher {
+class WebSocketPublisher()(implicit materializer: Materializer)
+  extends GpdvizPublisher {
 
   def details: String = "WebSockets"
 
-  def publish(notif: Notif): Unit = {
-    system.eventStream publish notif
-  }
+  private val (wsActor, wsSource) = Source
+    .actorRef[Notif](1024, OverflowStrategy.fail)
+    .preMaterialize()
 
-  // Some refs:
-  // - https://stackoverflow.com/a/41359874/830737 -- possible mechanism to track connected clients
-  // - https://stackoverflow.com/a/35313963/830737
-  // - https://groups.google.com/d/msg/akka-user/aA7RD2On_K0/6SJDgOPpAAAJ
+  // client connection was was not consistently successful (.. "terminated abruptly");
+  // not sure whether it's a bug or bad setup here, but this helped:
+  // https://github.com/akka/akka-http/issues/3039#issuecomment-610125754
+  wsSource.runWith(Sink.ignore)
 
-  def wsHandler(sysid: String): Flow[Any, TextMessage.Strict, NotUsed] = {
-    val dataSource: Source[Notif, ActorRef] =
-      Source.fromPublisher[Notif](MyActorPublisher.props(sysid))
+  def publish(notif: Notif): Unit = wsActor ! notif
+
+  def wsHandler(sysid: String): Flow[Any, TextMessage.Strict, Any] = {
+    scribe.warn(s"wsHandler: sysid=$sysid")
     Flow.fromSinkAndSource(
       Sink.ignore,
-      dataSource map { notif =>
-        TextMessage.Strict(notif.toJsonString)
-      },
+      wsSource
+        .filter(_.sysid == sysid)
+        // .map(notif => {
+        //   println(s"notif=$notif")
+        //   notif
+        // })
+        .map(notif => TextMessage.Strict(notif.toJsonString))
     )
   }
-}
-
-class MyActorPublisher(sysid: String) extends RPublisher[Notif] {
-  override def preStart: Unit = context.system.eventStream.subscribe(self, classOf[Notif])
-
-  override def receive: Receive = { case notif: Notif =>
-    if (isActive && totalDemand > 0) {
-      // Pushes the message onto the stream
-      if (sysid == notif.sysid)
-        onNext(notif)
-    }
-
-  // case x => println("RECEIVE: " + x + " " +x.getClass.getName)
-  }
-}
-
-object MyActorPublisher {
-  def props(sysid: String)(implicit ctx: ExecutionContext): Props = Props(
-    new MyActorPublisher(sysid),
-  )
 }

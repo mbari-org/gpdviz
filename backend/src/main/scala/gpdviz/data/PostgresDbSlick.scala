@@ -346,7 +346,7 @@ class PostgresDbSlick(slickConfig: Config)(implicit ec: ExecutionContext)
   private def observation2model(seq: Seq[PgObservation]): Map[String, List[ObsData]] = {
     val byTime = seq.groupBy(_.time)
     byTime.map { case (time, obss) =>
-      time.format(DateTimeFormatter.ISO_INSTANT) → (obss map { obs =>
+      time.format(DateTimeFormatter.ISO_INSTANT) -> (obss map { obs =>
         ObsData(
           feature = obs.feature,
           geometry = obs.geometry,

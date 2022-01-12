@@ -3,16 +3,17 @@ package gpdviz
 import akka.http.scaladsl.model.ContentTypes._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import gpdviz.async.{Notifier, Publisher}
+import gpdviz.async.{GpdvizPublisher, Notifier}
 import gpdviz.data.{DbFactory, DbInterface}
 import gpdviz.model._
 import gpdviz.server._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MockPublisher extends Publisher {
+class MockPublisher extends GpdvizPublisher {
   def details: String = "mock-publisher"
 
   def publish(notif: Notif): Unit = {
@@ -27,7 +28,7 @@ class MockPublisher extends Publisher {
   private var list: List[Notif] = List.empty
 }
 
-class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with GpdvizService {
+class GpdvizSpec extends AnyWordSpec with Matchers with ScalatestRouteTest with GpdvizService {
   val dbFactory: DbFactory = new DbFactory
   val db: DbInterface = dbFactory.testDb
   val publisher = new MockPublisher
@@ -82,7 +83,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
 
     "eventually have generated notification about new sensor system" in {
       publisher.lastPublished map { lastNotif ⇒
-        lastNotif shouldBe Some(_:SensorSystemAdded)
+        lastNotif shouldBe (Some(_:SensorSystemAdded))
         lastNotif.head.asInstanceOf[SensorSystemAdded].sysid === sysid.get
       }
     }
@@ -124,7 +125,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
     "not have generated notification about updated sensor system" in {
       // so check for the same previously notified SensorSystemAdded
       publisher.lastPublished map { lastNotif ⇒
-        lastNotif shouldBe Some(_: SensorSystemAdded)
+        lastNotif shouldBe (Some(_: SensorSystemAdded))
         lastNotif.head.asInstanceOf[SensorSystemAdded].sysid === sysid.get
       }
     }
@@ -142,7 +143,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
 
     "eventually have generated notification about updated sensor system (with pushEvents=true)" in {
       publisher.lastPublished map { lastNotif ⇒
-        lastNotif shouldBe Some(_: SensorSystemUpdated)
+        lastNotif shouldBe (Some(_: SensorSystemUpdated))
         lastNotif.head.asInstanceOf[SensorSystemUpdated].sysid === sysid.get
       }
     }
@@ -182,7 +183,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
 
     "eventually have generated notification about added data streams" in {
       publisher.lastPublished map { lastNotif ⇒
-        lastNotif shouldBe Some(_: DataStreamAdded)
+        lastNotif shouldBe (Some(_: DataStreamAdded))
         val notif = lastNotif.head.asInstanceOf[DataStreamAdded]
         notif.sysid === sysid.get
         notif.str.strid === strid2
@@ -206,7 +207,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
 
     "eventually have generated notification about added variable definition" in {
       publisher.lastPublished map { lastNotif ⇒
-        lastNotif shouldBe Some(_: VariableDefAdded)
+        lastNotif shouldBe (Some(_: VariableDefAdded))
         val notif = lastNotif.head.asInstanceOf[VariableDefAdded]
         notif.sysid === sysid.get
         notif.strid === strid
@@ -249,7 +250,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
 
     "eventually have generated notification about deleted data stream" in {
       publisher.lastPublished map { lastNotif ⇒
-        lastNotif shouldBe Some(_: DataStreamDeleted)
+        lastNotif shouldBe (Some(_: DataStreamDeleted))
         val notif = lastNotif.head.asInstanceOf[DataStreamDeleted]
         notif.sysid === sysid.get
         notif.strid === strid
@@ -289,10 +290,10 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
       ))))
 
     val observations = Map(
-      "2017-10-10T10:10:00Z" → list1,
-      "2017-10-10T10:10:01Z" → list2,
-      "2017-10-10T10:10:02Z" → list3,
-      "2017-10-10T10:10:03Z" → list4
+      "2017-10-10T10:10:00Z" -> list1,
+      "2017-10-10T10:10:01Z" -> list2,
+      "2017-10-10T10:10:02Z" -> list3,
+      "2017-10-10T10:10:03Z" -> list4
     )
 
     "add observations" in {
@@ -310,7 +311,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
 
     "eventually have generated notification about added observations" in {
       publisher.lastPublished map { lastNotif ⇒
-        lastNotif shouldBe Some(_: ObservationsAdded)
+        lastNotif shouldBe (Some(_: ObservationsAdded))
         val notif = lastNotif.head.asInstanceOf[ObservationsAdded]
         notif.sysid === sysid.get
         notif.strid === strid
@@ -328,7 +329,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
         observations foreach { case (time, list) ⇒
           str.observations.nonEmpty === true
           val retrievedObservations = str.observations.get
-          retrievedObservations.get(time).nonEmpty === true
+          retrievedObservations.contains(time) === true
           val obsDataList = retrievedObservations(time)
           val scalarData = obsDataList.flatMap(_.scalarData)
           scalarData === list
@@ -339,7 +340,7 @@ class GpdvizSpec extends WordSpec with Matchers with ScalatestRouteTest with Gpd
     "fail to add observation with malformed timestamp" in {
       val timestamp = "1503090553"
       val observations = Map(
-        timestamp → List(ObsData(
+        timestamp -> List(ObsData(
           scalarData = Some(ScalarData(
             vars = List("temperature"),
             vals = List(13.0)
