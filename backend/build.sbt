@@ -30,6 +30,7 @@ lazy val root = (project in file("."))
       "com.typesafe.akka" %% "akka-http" % "10.2.7",
       "com.typesafe.akka" %% "akka-http-spray-json" % "10.2.7",
       "com.typesafe.akka" %% "akka-http-testkit" % "10.2.7",
+      "com.typesafe.akka" %% "akka-stream-testkit" % "2.6.18",
       "ch.megard" %% "akka-http-cors" % "1.1.2",
       "com.esri.geometry" % "esri-geometry-api" % "1.2.1",
       "com.lihaoyi" %% "pprint" % "0.7.1",
