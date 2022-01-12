@@ -100,7 +100,7 @@ class Notifier(db: DbInterface, pub: Publisher)(implicit ec: ExecutionContext)
           ObservationsAdded(
             sysid = sysid,
             strid = strid,
-            obss = slice,
+            obss = slice.toMap,
           ),
         )
         rec(next)

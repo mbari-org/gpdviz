@@ -97,7 +97,7 @@ object Gpdviz {
       }
 
       def replaceTimeMs2iso(ss: SensorSystem): SensorSystem = {
-        val streams = ss.streams.mapValues { ds =>
+        val streams = ss.streams.view.mapValues { ds =>
           val newObss = ds.observations.map { obss =>
             obss.map { case (time, list) =>
               val instant = java.time.Instant.ofEpochMilli(time.toDouble.toLong)
@@ -112,7 +112,7 @@ object Gpdviz {
           }
           ds.copy(observations = newObss)
         }
-        ss.copy(streams = streams)
+        ss.copy(streams = streams.toMap)
       }
     }
 

@@ -3,8 +3,7 @@ package gpdviz.model
 import com.cloudera.science.geojson.Feature
 import com.esri.core.geometry.Geometry
 import spray.json.JsValue
-
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 import scala.annotation.meta.field
 
@@ -23,10 +22,10 @@ case class DataStream(
     strid:       String,
     name:        Option[String] = None,
     description: Option[String] = None,
-    @(ApiModelProperty @field)(dataType = "object")
+    @Schema(required = false, implementation = classOf[JsValue])
     mapStyle: Option[JsValue] = None,
     zOrder:   Int = 0,
-    @(ApiModelProperty @field)(dataType = "object")
+    @Schema(required = false, implementation = classOf[JsValue])
     chartStyle:   Option[JsValue] = None,
     variables:    Option[List[VariableDef]] = None,
     observations: Option[Map[String, List[ObsData]]] = None,
@@ -35,14 +34,14 @@ case class DataStream(
 case class VariableDef(
     name:  String,
     units: Option[String] = None,
-    @(ApiModelProperty @field)(dataType = "object")
+    @Schema(required = false, implementation = classOf[JsValue])
     chartStyle: Option[JsValue] = None,
 )
 
 case class ObsData(
-    @(ApiModelProperty @field)(dataType = "object")
+    @Schema(required = false, implementation = classOf[Feature])
     feature: Option[Feature] = None,
-    @(ApiModelProperty @field)(dataType = "object")
+    @Schema(required = false, implementation = classOf[Geometry])
     geometry:   Option[Geometry] = None,
     scalarData: Option[ScalarData] = None,
 )

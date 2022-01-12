@@ -1,8 +1,19 @@
-scalaVersion     := "2.12.8"
-//scalaVersion     := "2.13.7"
+scalaVersion     := "2.13.7"
 version          := "0.5.1"
 organization     := "org.mbari"
 organizationName := "mbari"
+
+val jacksonVersion = "2.13.1"
+val swaggerVersion = "2.1.12"
+
+val swaggerDependencies = Seq(
+  "jakarta.ws.rs" % "jakarta.ws.rs-api" % "3.0.0",
+  "com.github.swagger-akka-http" %% "swagger-akka-http" % "2.6.0",
+  "com.github.swagger-akka-http" %% "swagger-scala-module" % "2.5.2",
+  "com.github.swagger-akka-http" %% "swagger-enumeratum-module" % "2.3.0",
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
+  "io.swagger.core.v3" % "swagger-jaxrs2-jakarta" % swaggerVersion
+)
 
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
@@ -12,20 +23,19 @@ lazy val root = (project in file("."))
     buildInfoKeys := Seq[BuildInfoKey](version),
     buildInfoPackage := "gpdviz",
     libraryDependencies ++= Seq(
-      "com.typesafe.slick" %% "slick" % "3.2.1",
-      "com.typesafe.slick" %% "slick-hikaricp" % "3.2.1",
-      "com.github.tminglei" %% "slick-pg" % "0.15.4",
-      "com.github.tminglei" %% "slick-pg_spray-json" % "0.15.4",
-      "com.typesafe.akka" %% "akka-http" % "10.0.10",
-      "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.10",
-      "com.typesafe.akka" %% "akka-http-testkit" % "10.0.10",
-      "ch.megard" %% "akka-http-cors" % "0.2.2",
-      "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.11.0",
+      "com.typesafe.slick" %% "slick" % "3.3.3",
+      "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
+      "com.github.tminglei" %% "slick-pg" % "0.20.2",
+      "com.github.tminglei" %% "slick-pg_spray-json" % "0.20.2",
+      "com.typesafe.akka" %% "akka-http" % "10.2.7",
+      "com.typesafe.akka" %% "akka-http-spray-json" % "10.2.7",
+      "com.typesafe.akka" %% "akka-http-testkit" % "10.2.7",
+      "ch.megard" %% "akka-http-cors" % "1.1.2",
       "com.esri.geometry" % "esri-geometry-api" % "1.2.1",
-      "com.lihaoyi" %% "pprint" % "0.5.2",
+      "com.lihaoyi" %% "pprint" % "0.7.1",
       "com.outr" %% "scribe" % "3.6.7",
-      "org.scalatest" %% "scalatest" % "3.0.3" % Test,
-    ),
+      "org.scalatest" %% "scalatest" % "3.2.10" % Test,
+    ) ++ swaggerDependencies,
 
     // The classes that you want to generate typescript interfaces for
     typescriptExports := Seq(

@@ -3,15 +3,15 @@ package gpdviz.async
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.model.ws.TextMessage
-import akka.stream.ActorMaterializer
-import akka.stream.actor.ActorPublisher
+import akka.stream.Materializer
+import org.reactivestreams.{Publisher => RPublisher}
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import gpdviz._
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 class WebSocketPublisher()(implicit
-    materializer:     ActorMaterializer,
+    materializer:     Materializer,
     executionContext: ExecutionContextExecutor,
     system:           ActorSystem,
 ) extends Publisher {
@@ -29,7 +29,7 @@ class WebSocketPublisher()(implicit
 
   def wsHandler(sysid: String): Flow[Any, TextMessage.Strict, NotUsed] = {
     val dataSource: Source[Notif, ActorRef] =
-      Source.actorPublisher[Notif](MyActorPublisher.props(sysid))
+      Source.fromPublisher[Notif](MyActorPublisher.props(sysid))
     Flow.fromSinkAndSource(
       Sink.ignore,
       dataSource map { notif =>
@@ -39,7 +39,7 @@ class WebSocketPublisher()(implicit
   }
 }
 
-class MyActorPublisher(sysid: String) extends ActorPublisher[Notif] {
+class MyActorPublisher(sysid: String) extends RPublisher[Notif] {
   override def preStart: Unit = context.system.eventStream.subscribe(self, classOf[Notif])
 
   override def receive: Receive = { case notif: Notif =>
