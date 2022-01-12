@@ -5,8 +5,6 @@ import com.esri.core.geometry.Geometry
 import spray.json.JsValue
 import io.swagger.v3.oas.annotations.media.Schema
 
-import scala.annotation.meta.field
-
 case class SensorSystem(
     sysid:         String,
     name:          Option[String] = None,

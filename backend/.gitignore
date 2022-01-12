@@ -1,5 +1,5 @@
 conf/
-src/main/resources/swaggerui/
+src/main/resources/swaggerui*/
 setenv.sh
 docker/postgres_data
 docker/conf

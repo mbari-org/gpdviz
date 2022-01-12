@@ -29,7 +29,9 @@ trait GpdvizService
   }
 
   private val swaggerUi: Route =
-    path("api-docs") { getFromResource("swaggerui/index.html") } ~
+    path("api-docs") {
+      getFromResource("swaggerui/index.html")
+    } ~
       getFromResourceDirectory("swaggerui")
 }
 
@@ -80,7 +82,7 @@ trait SsService extends GpdvizServiceImpl with Directives {
     responses = Array(
       new ApiResponse(
         responseCode = "201",
-        description = "Echo Enum",
+        description = "A list with a summary of each registered system",
         content = Array(
           new Content(schema = new Schema(implementation = classOf[Array[SensorSystemSummary]])),
         ),
@@ -468,6 +470,7 @@ trait ObsService extends GpdvizServiceImpl with Directives {
   }
 }
 
+// TODO dispatch frontend
 trait StaticAndAjaxService extends GpdvizServiceImpl with Directives {
   def staticAndAjaxRoute: Route = {
     val staticRoute = {
@@ -477,6 +480,7 @@ trait StaticAndAjaxService extends GpdvizServiceImpl with Directives {
         }
       }
 
+      // TODO remove previous scala.js-based scheme
       val jsStuff = pathSuffix("gpdviz-fastopt.js" / Segments) { _ =>
         getFromResource("gpdviz-fastopt.js")
       } ~ pathSuffix("gpdviz-fastopt.js.map" / Segments) { _ =>
@@ -502,26 +506,6 @@ trait StaticAndAjaxService extends GpdvizServiceImpl with Directives {
 
     staticRoute
 
-//    val ajax = {
-//      import scala.concurrent.ExecutionContext.Implicits.global
-//      val apiImpl = new ApiImpl(db)
-//      val autowireServer = new AutowireServer(apiImpl)
-//      post {
-//        path("ajax" / Segments) { s =>
-//          entity(as[String]) { e =>
-//            complete {
-//              autowireServer.route[gpdviz.Api](apiImpl)(
-//                autowire.Core.Request(
-//                  s,
-//                  upickle.default.read[Map[String, String]](e)
-//                )
-//              )
-//            }
-//          }
-//        }
-//      }
-//    }
-//
-//    ajax ~ staticRoute
+
   }
 }
