@@ -1,4 +1,4 @@
-import { IDataStream, IScalarData, JsonValue } from 'components/genmodel'
+import { IDataStream, IScalarData, JsonValue } from 'src/components/genmodel'
 import { setupLLMap } from 'src/map/llmap_js'
 import { positionsByTime } from 'src/map/PositionsByTime'
 
@@ -56,7 +56,7 @@ export class LLMap {
       }
     }
     // TODO
-    const includeGoogleMap = false
+    const includeGoogleMap = true
     const mouseOutside = () => this._llmap?.addSelectionPoint()
 
     this._llmap = setupLLMap(

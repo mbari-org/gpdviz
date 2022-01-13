@@ -5,6 +5,8 @@ export {setupLLMap}
 import * as L from 'leaflet'
 import * as esri from 'esri-leaflet/dist/esri-leaflet'
 import * as esriVector from 'esri-leaflet-vector/dist/esri-leaflet-vector'
+import 'leaflet.gridlayer.googlemutant/dist/Leaflet.GoogleMutant'
+
 import localConfig from './localConfig.js'
 import Charter from './charter.js'
 

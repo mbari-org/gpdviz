@@ -2,6 +2,7 @@
 
 2022-01
 
+- provisional inclusion of google base layer (w/o key)
 - ad hoc dispatch of chart popup positioning
   (typical popup or with an "absolute" position)
   via className option in the L.popup call.
