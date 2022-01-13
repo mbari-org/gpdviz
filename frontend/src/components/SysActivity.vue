@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { IDataStream, ISensorSystem } from 'components/genmodel'
+import ChartDialog from 'src/components/ChartDialog'
 
 import keys from 'lodash/keys'
 import sortBy from 'lodash/sortBy'
@@ -41,15 +42,19 @@ const observationsSummary = computed(() => (ds: IDataStream) => {
       <ul style="margin-left: -20px">
         <li v-for="str in sortedStreams" :key="str.strid" class="q-mb-xs">
           <div>
-            <span class="text-bold">
-              {{ str.strid }}
+            <div class="row items-center q-gutter-x-sm">
+              <div class="text-bold">
+                {{ str.strid }}
+              </div>
+              <ChartDialog withOpenButton :str="str" />
               <q-tooltip v-if="str.mapStyle || str.chartStyle">
                 <pre v-if="str.mapStyle">mapStyle = {{ str.mapStyle }}</pre>
                 <pre v-if="str.chartStyle">
-chartStyle = {{ str.chartStyle }}</pre
+                  chartStyle = {{ str.chartStyle }}</pre
                 >
               </q-tooltip>
-            </span>
+            </div>
+
             <ul v-if="str.variables">
               <li v-for="(v, v_index) in str.variables" :key="v_index">
                 {{ v.name }}
@@ -62,6 +67,9 @@ chartStyle = {{ str.chartStyle }}</pre
               Observations: {{ observationsSummary(str).numObservations }}
             </div>
             <div>Latest: {{ observationsSummary(str).latest }}</div>
+            <q-tooltip>
+              <pre>{{ str.observations }}</pre>
+            </q-tooltip>
           </div>
         </li>
       </ul>
