@@ -5,7 +5,7 @@
 Gpdviz is a generic, lightweight tool for web-based visualization
 of geolocated point data streams in real-time.
 
-This project is a rewrite of a [previous version](https://github.com/gpdviz)
+This project is a rewrite of a [previous version](https://github.com/mbari-org/gpdviz-sjs)
 written in Scala/Scala.js.
 The overall goal of this new project is to modernize the system in general
 while also separating the backend and frontend components to make better

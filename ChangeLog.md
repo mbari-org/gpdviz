@@ -1,5 +1,9 @@
 # Gpdviz
 
+2022-08
+
+- minor note edits mainly to point to mbari-org/gpdviz
+
 2022-01
 
 - Starting rewrite of the gpdviz system.
